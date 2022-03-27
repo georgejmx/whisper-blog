@@ -64,14 +64,12 @@ func (dbo *DatabaseObject) GrabPosts() ([]tp.Post, error) {
 }
 
 func (dbo *DatabaseObject) AddPost(post tp.Post) error {
-	query := `insert into Post (title, author, contents, descriptors, tag) 
-		values (?, ?, ?, ?, ?)`
-	stmt, err := dbo.db.Prepare(query)
+	tx, _ := dbo.db.Begin()
+	_, err := tx.Exec(`insert into Post (title, author, contents, descriptors, 
+		tag) values (?, ?, ?, ?, ?)`,
+		post.Title, post.Author, post.Contents, post.Descriptors, post.Tag)
 	if err != nil {
 		return err
 	}
-	_, err = stmt.Exec(post.Title, post.Author, post.Contents,
-		post.Descriptors, post.Tag)
-	stmt.Close()
-	return err
+	return tx.Commit()
 }
