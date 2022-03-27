@@ -39,13 +39,16 @@ func (dbo *DatabaseObject) Init() error {
 	return err
 }
 
+// TODO: make this into GrabData at a later date, to include reactions
 func (dbo *DatabaseObject) GrabPosts() ([]tp.Post, error) {
 	var posts []tp.Post
+	tx, _ := dbo.db.Begin()
 
 	// Getting rows from query
-	query := `select id, title, author, contents, tag, descriptors from Post`
-	rows, err := dbo.db.Query(query)
+	rows, err := tx.Query(`select id, title, author, contents, tag, descriptors 
+		from Post`)
 	if err != nil {
+		tx.Rollback()
 		return posts, err
 	}
 
@@ -60,9 +63,16 @@ func (dbo *DatabaseObject) GrabPosts() ([]tp.Post, error) {
 	}
 
 	rows.Close()
-	return posts, nil
+	return posts, tx.Commit()
 }
 
+/*
+* Adds a new post to the blog database. Using user data from the frontend
+* and a generated descriptors and tag
+* Params: Post with the fields title, author, contents, descriptors, tag,
+	code populated
+* Ensures that all data for a post has been entered
+*/
 func (dbo *DatabaseObject) AddPost(post tp.Post) error {
 	tx, _ := dbo.db.Begin()
 	_, err := tx.Exec(`insert into Post (title, author, contents, descriptors, 
