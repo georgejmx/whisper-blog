@@ -1,7 +1,6 @@
 # TODO
 
-- Unit testing
-- Serve a dummy frontend from '/'
+- More unit testing
 - Add a Codes table and this functionality
 - Add in Reactions and properly formatted GET /data
 

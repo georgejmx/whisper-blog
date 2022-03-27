@@ -1,21 +1,21 @@
 package main
 
 import (
+	"net/http"
+	"os"
 	r "whisper-blog/routes"
 
 	"github.com/gin-gonic/gin"
 )
 
 func main() {
-	r.Setup()
+	// Setting up database connection and routes
+	r.SetupDatabase()
 	router := gin.Default()
-	router.GET("/init", func(c *gin.Context) {
-		c.JSON(200, gin.H{
-			"message": "A place to mysteriously connect with friends :-)",
-			"version": 0.2,
-		})
-	})
 	router.GET("/data", r.GetChain)
 	router.POST("/data/post", r.AddPost)
+
+	// Serving frontend at root path, then running
+	router.GET("/", gin.WrapH(http.FileServer(http.FS(os.DirFS("client/dist")))))
 	router.Run("localhost:8080")
 }

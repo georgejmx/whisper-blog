@@ -69,6 +69,7 @@ func (dbo *DatabaseObject) AddPost(post tp.Post) error {
 		tag) values (?, ?, ?, ?, ?)`,
 		post.Title, post.Author, post.Contents, post.Descriptors, post.Tag)
 	if err != nil {
+		tx.Rollback()
 		return err
 	}
 	return tx.Commit()

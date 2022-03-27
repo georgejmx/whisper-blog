@@ -11,7 +11,7 @@ import (
 var dbo d.DatabaseObject
 
 // Establishes database connection, else panics
-func Setup() {
+func SetupDatabase() {
 	if err := dbo.Init(); err != nil {
 		panic("unable to initialise database")
 	}
