@@ -70,7 +70,7 @@ func (dbo *DatabaseObject) GrabPosts() ([]tp.Post, error) {
 * Adds a new post to the blog database. Using user data from the frontend
 * and a generated descriptors and tag
 * Params: Post with the fields title, author, contents, descriptors, tag,
-	code populated
+	codeHash populated
 * Ensures that all data for a post has been entered
 */
 func (dbo *DatabaseObject) AddPost(post tp.Post) error {

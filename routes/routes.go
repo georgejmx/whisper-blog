@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	d "whisper-blog/controller"
 	tp "whisper-blog/types"
+	u "whisper-blog/utils"
 
 	"github.com/gin-gonic/gin"
 )
@@ -28,10 +29,13 @@ func AddPost(c *gin.Context) {
 	}
 
 	// Generating post descriptors then attempting db insert
-	post.Descriptors = `fun;proverbial;feindish;flat;dummylike;
-		serendipitous;granular;bespoke;frosted;zyrgony`
-	err3 := dbo.AddPost(post)
-	if err3 != nil {
+	post.Descriptors, err = u.GenerateDescriptors()
+	if err != nil {
+		sendFailure(c, "unable to generate descriptors for post")
+		return
+	}
+	err = dbo.AddPost(post)
+	if err != nil {
 		sendFailure(c, "database operation failed")
 		return
 	}
