@@ -8,13 +8,13 @@ import (
 )
 
 // Database object is where all queries are executed on
-type DatabaseObject struct {
+type DbController struct {
 	db *sql.DB
 }
 
 /* Establishes database connection and sets up tables if needed
 Returns an error if applicable */
-func (dbo *DatabaseObject) Init() error {
+func (dbo *DbController) Init() error {
 	var err error = nil
 
 	// Open database connection
@@ -47,7 +47,7 @@ func (dbo *DatabaseObject) Init() error {
 }
 
 // TODO: make this into GrabData at a later date, to include reactions
-func (dbo *DatabaseObject) GrabPosts() ([]tp.Post, error) {
+func (dbo *DbController) GrabPosts() ([]tp.Post, error) {
 	var posts []tp.Post
 	tx, _ := dbo.db.Begin()
 
@@ -78,7 +78,7 @@ and a generated descriptors and tag
 Params: Post with the fields title, author, contents, descriptors, tag,
 	codeHash populated
 Ensures that all data for a post has been entered */
-func (dbo *DatabaseObject) AddPost(post tp.Post) error {
+func (dbo *DbController) AddPost(post tp.Post) error {
 	tx, _ := dbo.db.Begin()
 	_, err := tx.Exec(`insert into Post (title, author, contents, descriptors, 
 		tag) values (?, ?, ?, ?, ?)`,
@@ -92,7 +92,7 @@ func (dbo *DatabaseObject) AddPost(post tp.Post) error {
 
 /* Selects the latest passcode hash from the database, for use in validation */
 // TODO: Paramerise to grab the most recent 3 hashes and genesis hash
-func (dbo *DatabaseObject) SelectHash() (string, error) {
+func (dbo *DbController) SelectHash() (string, error) {
 	var hash string
 
 	tx, _ := dbo.db.Begin()
@@ -109,7 +109,8 @@ func (dbo *DatabaseObject) SelectHash() (string, error) {
 	return hash, tx.Commit()
 }
 
-func (dbo *DatabaseObject) InsertHash(hash string) error {
+/* Adds a new row to the passcode table, with a generated hash */
+func (dbo *DbController) InsertHash(hash string) error {
 	tx, _ := dbo.db.Begin()
 	_, err := tx.Exec(`insert into Passcode (hash) values (?)`, hash)
 	if err != nil {

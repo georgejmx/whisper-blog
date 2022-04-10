@@ -9,7 +9,7 @@ import (
 )
 
 var (
-	testDbo DatabaseObject
+	testDbo DbController
 	mock    sqlmock.Sqlmock
 	err     error
 )

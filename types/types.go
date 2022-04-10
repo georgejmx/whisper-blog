@@ -11,3 +11,12 @@ type Post struct {
 	Time        string `json:"time"`
 	Hash        string `json:"hash"`
 }
+
+// A template for an object that performs database interactions
+type ControllerTemplate interface {
+	Init() error
+	GrabPosts() ([]Post, error)
+	AddPost(post Post) error
+	SelectHash() (string, error)
+	InsertHash(hash string) error
+}

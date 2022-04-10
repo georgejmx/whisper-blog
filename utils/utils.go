@@ -39,6 +39,18 @@ func GenerateDescriptors() (string, error) {
 	return strings.Join(descriptors[:], ";"), nil
 }
 
+/* Generates a new plain-text passcode and hash pair to lead the chain */
+func GenerateRawPasscode() string {
+	rand.Seed(time.Now().Unix())
+	var letters = []rune(
+		"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789")
+	s := make([]rune, 12)
+	for i := range s {
+		s[i] = letters[rand.Intn(len(letters))]
+	}
+	return string(s)
+}
+
 /* Find the number of lines present in the specified file. Used for getting the
 total number of possible adjectives to search through that are present
 in *adjectives.txt* */

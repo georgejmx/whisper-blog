@@ -3,16 +3,18 @@ package routes
 import (
 	"encoding/json"
 	d "whisper-blog/controller"
+	x "whisper-blog/security"
 	tp "whisper-blog/types"
 	u "whisper-blog/utils"
 
 	"github.com/gin-gonic/gin"
 )
 
-var dbo d.DatabaseObject
+var dbo tp.ControllerTemplate
 
-// Establishes database connection, else panics
+/* Establishes database connection and controller object, else panics */
 func SetupDatabase() {
+	dbo = &d.DbController{}
 	if err := dbo.Init(); err != nil {
 		panic("unable to initialise database")
 	}
@@ -28,21 +30,37 @@ func AddPost(c *gin.Context) {
 		return
 	}
 
-	// Generating post descriptors then attempting db insert
+	// Performing hash validation
+	isValidated, err := x.ValidateHash(dbo, post.Hash)
+	if err != nil {
+		sendFailure(c, "unable to perform passcode validation")
+		return
+	} else if !isValidated {
+		sendFailure(c, "passcode validation failed")
+		return
+	}
+
+	// Generating post descriptors then performing db insert of post
 	post.Descriptors, err = u.GenerateDescriptors()
 	if err != nil {
 		sendFailure(c, "unable to generate descriptors for post")
 		return
-	}
-	err = dbo.AddPost(post)
-	if err != nil {
+	} else if err = dbo.AddPost(post); err != nil {
 		sendFailure(c, "database operation failed")
+		return
+	}
+
+	// Inserting new passcode and getting cipher
+	cipher, err := x.SetHashAndRetrieveCipher(dbo)
+	if err != nil {
+		sendFailure(c, "error when setting new passcode and/or getting cipher")
 		return
 	}
 
 	// Sending success response
 	c.JSON(201, gin.H{
 		"message": "post successful",
+		"data":    cipher,
 		"marker":  1,
 	})
 }

@@ -1,13 +1,19 @@
 package security
 
 import (
-	d "whisper-blog/controller"
+	"bytes"
+	"crypto/aes"
+	"crypto/cipher"
+	"crypto/sha256"
+	"encoding/hex"
+	tp "whisper-blog/types"
+	u "whisper-blog/utils"
 )
 
 /* Function to validate the provided hash against the chain law, determining
 whether a lawful post can be made */
 // TODO: Encode the proper chain law e.g after 6 days an extra hash is valid
-func ValidateHash(dbo d.DatabaseObject, hash string) (bool, error) {
+func ValidateHash(dbo tp.ControllerTemplate, hash string) (bool, error) {
 	storedHash, err := dbo.SelectHash()
 	if err != nil {
 		return false, err
@@ -17,4 +23,38 @@ func ValidateHash(dbo d.DatabaseObject, hash string) (bool, error) {
 
 	// There's no error and hashes are equal
 	return true, nil
+}
+
+/* Sets the new randomly generated hash by inserting into the database. Returns
+A string which is the new raw text symmetrically encrypted */
+func SetHashAndRetrieveCipher(dbo tp.ControllerTemplate) (string, error) {
+	oldHash, err := dbo.SelectHash()
+	if err != nil {
+		return "fail", err
+	}
+
+	// Generating passcode and hash
+	rawPasscode := u.GenerateRawPasscode()
+	hashBytes := sha256.Sum256([]byte(rawPasscode))
+	dbo.InsertHash(hex.EncodeToString(hashBytes[:]))
+
+	// Initialising cipher with the old hash
+	bPlaintext := pkcs5Padding([]byte(rawPasscode), aes.BlockSize, 12)
+	block, err := aes.NewCipher([]byte(oldHash[28:60]))
+	if err != nil {
+		return "fail", err
+	}
+
+	// Encrypting the raw passcode for response to client
+	ciphertext := make([]byte, len(bPlaintext))
+	mode := cipher.NewCBCEncrypter(block, []byte("snooping6is9bad0"))
+	mode.CryptBlocks(ciphertext, bPlaintext)
+	return hex.EncodeToString(ciphertext), nil
+}
+
+/* Boilerplate padding function */
+func pkcs5Padding(ciphertext []byte, blockSize int, after int) []byte {
+	padding := (blockSize - len(ciphertext)%blockSize)
+	padtext := bytes.Repeat([]byte{byte(padding)}, padding)
+	return append(ciphertext, padtext...)
 }
