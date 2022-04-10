@@ -10,12 +10,11 @@ import (
 	"time"
 )
 
-const adjectivesPath string = "./data/adjectives.txt"
+var adjectivesPath string = "./data/adjectives.txt"
 
 /* Generates a descriptors string of the format 'word;word;word;' of length 10,
- * to be bound to a post in the database. Gets the length then randomly picks
- * words from *adjectives.txt* to add to the string
- */
+to be bound to a post in the database. Gets the length then randomly picks
+words from *adjectives.txt* to add to the string */
 func GenerateDescriptors() (string, error) {
 	var descriptors [10]string
 
@@ -40,10 +39,9 @@ func GenerateDescriptors() (string, error) {
 	return strings.Join(descriptors[:], ";"), nil
 }
 
-/* Find the number of lines present in the specified file. Used for
- * getting the total number of possible adjectives to search through
- * that are present in *adjectives.txt*
- */
+/* Find the number of lines present in the specified file. Used for getting the
+total number of possible adjectives to search through that are present
+in *adjectives.txt* */
 func parseWordsCount() (int, error) {
 	file, err := os.Open(adjectivesPath)
 	if err != nil {
@@ -69,9 +67,8 @@ func parseWordsCount() (int, error) {
 }
 
 /* Parses a word at the specificed random index from *adjectives.txt*.
- * Does so by scanning lines until the index is reached
- * Returns: string; the parsed word
- */
+Does so by scanning lines until the index is reached
+Returns: string; the parsed word */
 func parseWord(index int) (string, error) {
 	file, err := os.Open(adjectivesPath)
 	if err != nil {
