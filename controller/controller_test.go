@@ -11,19 +11,22 @@ import (
 var (
 	testDbo DatabaseObject
 	mock    sqlmock.Sqlmock
+	err     error
 )
 
-/* Tests that the GrabPost controller behaves as expected. Ensures that the SQL
- * driver correctly processes grabbing posts
- */
-func TestGrabPostsSuccess(t *testing.T) {
-	// Opening stub database
-	var err error
+/* Called at the begining of each test; sets up stub db */
+func setupTest(t *testing.T) {
 	testDbo.db, mock, err = sqlmock.New()
 	if err != nil {
 		t.Log("error when opening stub database")
 		t.Fail()
 	}
+}
+
+/* Tests that the GrabPost controller behaves as expected. Ensures that the SQL
+driver correctly processes grabbing posts */
+func TestGrabPostsSuccess(t *testing.T) {
+	setupTest(t)
 
 	// Mocking db operations by populating this mock database
 	rows := sqlmock.NewRows(
@@ -38,30 +41,16 @@ func TestGrabPostsSuccess(t *testing.T) {
 
 	// Running the real function with above parameters
 	if _, err = testDbo.GrabPosts(); err != nil {
-		t.Log(fmt.Sprintf("error not expected when grabbing posts: %s", err))
+		t.Logf("error not expected when grabbing posts: %s", err)
 		t.Fail()
 	}
-
-	// Ensuring all expectations met
-	if err := mock.ExpectationsWereMet(); err != nil {
-		t.Log("there were unfulfilled expectations")
-		t.Fail()
-	}
-
-	testDbo.db.Close()
+	teardownTest(t)
 }
 
 /* Tests that the GrabPost controller behaves as expected. Ensures that the SQL
- * driver correctly behaves in the case of an error
- */
+driver correctly behaves in the case of an error */
 func TestGrabPostsFailure(t *testing.T) {
-	// Opening stub database
-	var err error
-	testDbo.db, mock, err = sqlmock.New()
-	if err != nil {
-		t.Log("error when opening stub database")
-		t.Fail()
-	}
+	setupTest(t)
 
 	mock.ExpectBegin()
 	mock.ExpectQuery(`select id, title, author, contents, tag, descriptors 
@@ -70,30 +59,40 @@ func TestGrabPostsFailure(t *testing.T) {
 
 	// Running the real function with above parameters
 	if _, err = testDbo.GrabPosts(); err == nil {
-		t.Log(fmt.Sprintf("expecting error when grabbing posts: %s", err))
+		t.Logf("expecting error when grabbing posts: %s", err)
 		t.Fail()
 	}
+	teardownTest(t)
+}
 
-	// Ensuring all expectations met
-	if err := mock.ExpectationsWereMet(); err != nil {
-		t.Log("there were unfulfilled expectations")
+/* Tests that selecting a hash is a valid query and does whats expected */
+func TestSelectHash(t *testing.T) {
+	setupTest(t)
+
+	// Needed for correct query matching of nested queries
+	testDbo.db, mock, err = sqlmock.New(
+		sqlmock.QueryMatcherOption(sqlmock.QueryMatcherEqual))
+
+	latestHash := `9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c
+		15b0f00a08`
+	rows := sqlmock.NewRows([]string{"hash"}).AddRow(latestHash)
+
+	mock.ExpectBegin()
+	mock.ExpectQuery(`select hash from Passcode where id = 
+	(select max(id) from Passcode)`).WillReturnRows(rows)
+	mock.ExpectCommit()
+
+	if _, err = testDbo.SelectHash(); err != nil {
+		t.Logf("error not expected when selecting hash: %s", err)
 		t.Fail()
 	}
-
-	testDbo.db.Close()
+	teardownTest(t)
 }
 
 /* Tests that the AddPost controller behaves as expected. Ensures that the SQL
- * driver correctly processes a successful entry
- */
+driver correctly processes a successful entry */
 func TestAddPostSuccess(t *testing.T) {
-	// Opening stub database
-	var err error
-	testDbo.db, mock, err = sqlmock.New()
-	if err != nil {
-		t.Log("error when opening stub database")
-		t.Fail()
-	}
+	setupTest(t)
 
 	// Mocking db operations with test post
 	testPost := tp.Post{
@@ -112,30 +111,16 @@ func TestAddPostSuccess(t *testing.T) {
 
 	// Adding test post to mock database
 	if err = testDbo.AddPost(testPost); err != nil {
-		t.Log(fmt.Sprintf("error not expected when adding post: %s", err))
+		t.Logf("error not expected when adding post: %s", err)
 		t.Fail()
 	}
-
-	// Ensuring all expectations met
-	if err := mock.ExpectationsWereMet(); err != nil {
-		t.Log("there were unfulfilled expectations")
-		t.Fail()
-	}
-
-	testDbo.db.Close()
+	teardownTest(t)
 }
 
 /* Tests that the AddPost controller behaves as expected. Ensures that the SQL
- * driver correctly processes a failed entry
- */
+driver correctly processes a failed entry */
 func TestAddPostFailure(t *testing.T) {
-	// Opening stub database
-	var err error
-	testDbo.db, mock, err = sqlmock.New()
-	if err != nil {
-		t.Log("error when opening stub database")
-		t.Fail()
-	}
+	setupTest(t)
 
 	// Mocking db operations with test post
 	testPost := tp.Post{
@@ -154,12 +139,17 @@ func TestAddPostFailure(t *testing.T) {
 
 	// Adding test post to mock database
 	if err = testDbo.AddPost(testPost); err == nil {
-		t.Log(fmt.Sprintf("was expecting error when adding post: %s", err))
+		t.Logf("was expecting error when adding post: %s", err)
 	}
+	teardownTest(t)
+}
 
-	// Ensuring all expectations met
+/* Called at the end of every test; ensuring all expectations met and database
+is cleared */
+func teardownTest(t *testing.T) {
 	if err := mock.ExpectationsWereMet(); err != nil {
 		t.Log("there were unfulfilled expectations")
 		t.Fail()
 	}
+	testDbo.db.Close()
 }

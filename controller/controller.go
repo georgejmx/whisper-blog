@@ -13,8 +13,7 @@ type DatabaseObject struct {
 }
 
 /* Establishes database connection and sets up tables if needed
- * Returns an error if applicable
-**/
+Returns an error if applicable */
 func (dbo *DatabaseObject) Init() error {
 	var err error = nil
 
@@ -35,7 +34,15 @@ func (dbo *DatabaseObject) Init() error {
 		time datetime default CURRENT_TIMESTAMP,
 		check (tag >= 0 and tag < 8)
 	)`
-	_, err = dbo.db.Exec(query)
+	if _, err = dbo.db.Exec(query); err != nil {
+		return err
+	}
+
+	query2 := `create table if not exists Passcode (
+		id integer primary key autoincrement not null,
+		hash varchar(64) not null
+	)`
+	_, err = dbo.db.Exec(query2)
 	return err
 }
 
@@ -66,18 +73,45 @@ func (dbo *DatabaseObject) GrabPosts() ([]tp.Post, error) {
 	return posts, tx.Commit()
 }
 
-/*
-* Adds a new post to the blog database. Using user data from the frontend
-* and a generated descriptors and tag
-* Params: Post with the fields title, author, contents, descriptors, tag,
+/* Adds a new post to the blog database. Using user data from the frontend
+and a generated descriptors and tag
+Params: Post with the fields title, author, contents, descriptors, tag,
 	codeHash populated
-* Ensures that all data for a post has been entered
-*/
+Ensures that all data for a post has been entered */
 func (dbo *DatabaseObject) AddPost(post tp.Post) error {
 	tx, _ := dbo.db.Begin()
 	_, err := tx.Exec(`insert into Post (title, author, contents, descriptors, 
 		tag) values (?, ?, ?, ?, ?)`,
 		post.Title, post.Author, post.Contents, post.Descriptors, post.Tag)
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+	return tx.Commit()
+}
+
+/* Selects the latest passcode hash from the database, for use in validation */
+// TODO: Paramerise to grab the most recent 3 hashes and genesis hash
+func (dbo *DatabaseObject) SelectHash() (string, error) {
+	var hash string
+
+	tx, _ := dbo.db.Begin()
+	row, err := tx.Query(`select hash from Passcode where id = 
+		(select max(id) from Passcode)`)
+	if err != nil {
+		tx.Rollback()
+		return hash, err
+	}
+	row.Next()
+	if err = row.Scan(&hash); err != nil {
+		return hash, err
+	}
+	return hash, tx.Commit()
+}
+
+func (dbo *DatabaseObject) InsertHash(hash string) error {
+	tx, _ := dbo.db.Begin()
+	_, err := tx.Exec(`insert into Passcode (hash) values (?)`, hash)
 	if err != nil {
 		tx.Rollback()
 		return err
