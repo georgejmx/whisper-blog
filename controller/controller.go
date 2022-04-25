@@ -18,7 +18,7 @@ func (dbo *DbController) Init() error {
 	var err error = nil
 
 	// Open database connection
-	dbo.db, err = sql.Open("sqlite3", "./data/blog.db")
+	dbo.db, err = sql.Open("sqlite3", "./data/blog_test.db")
 	if err != nil {
 		return err
 	}
@@ -31,7 +31,7 @@ func (dbo *DbController) Init() error {
 		contents varchar(1500) not null,
 		tag integer not null,
 		descriptors varchar(210),
-		time datetime default CURRENT_TIMESTAMP,
+		time datetime default current_timestamp,
 		check (tag >= 0 and tag < 8)
 	)`
 	if _, err = dbo.db.Exec(query); err != nil {
@@ -52,8 +52,7 @@ func (dbo *DbController) GrabPosts() ([]tp.Post, error) {
 	tx, _ := dbo.db.Begin()
 
 	// Getting rows from query
-	rows, err := tx.Query(`select id, title, author, contents, tag, descriptors 
-		from Post`)
+	rows, err := tx.Query(`select * from Post order by id desc`)
 	if err != nil {
 		tx.Rollback()
 		return posts, err
@@ -62,9 +61,9 @@ func (dbo *DbController) GrabPosts() ([]tp.Post, error) {
 	// Adding post rows from database table to the posts variable, unless error
 	for rows.Next() {
 		var post tp.Post
-		if err2 := rows.Scan(&post.Id, &post.Title, &post.Author,
-			&post.Contents, &post.Tag, &post.Descriptors); err2 != nil {
-			return posts, err2
+		if err = rows.Scan(&post.Id, &post.Title, &post.Author, &post.Contents,
+			&post.Tag, &post.Descriptors, &post.Time); err != nil {
+			return posts, err
 		}
 		posts = append(posts, post)
 	}

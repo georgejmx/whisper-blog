@@ -9,7 +9,7 @@ type Post struct {
 	Tag         int    `json:"tag"`
 	Descriptors string `json:"descriptors"`
 	Time        string `json:"time"`
-	Hash        string `json:"hash"`
+	Hash        string `json:"hash,omitempty"`
 }
 
 // A template for an object that performs database interactions
