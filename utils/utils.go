@@ -1,43 +1,11 @@
 package utils
 
 import (
-	"bufio"
-	"bytes"
-	"io"
 	"math/rand"
-	"os"
-	"strings"
 	"time"
 )
 
-var adjectivesPath string = "./data/adjectives.txt"
-
-/* Generates a descriptors string of the format 'word;word;word;' of length 10,
-to be bound to a post in the database. Gets the length then randomly picks
-words from *adjectives.txt* to add to the string */
-func GenerateDescriptors() (string, error) {
-	var descriptors [10]string
-
-	// Getting total number of adjectives, for use by random number generator
-	wordCount, err := parseWordsCount()
-	if err != nil {
-		return "fail", err
-	}
-
-	// Generating 10 random words using loop
-	i := 0
-	rand.Seed(time.Now().UnixNano())
-	for i < 10 {
-		index := rand.Intn(wordCount)
-		decriptor, err := parseWord(index)
-		if err != nil {
-			return "fail", err
-		}
-		descriptors[i] = decriptor
-		i++
-	}
-	return strings.Join(descriptors[:], ";"), nil
-}
+const DAYS_INT = 86400
 
 /* Generates a new plain-text passcode and hash pair to lead the chain */
 func GenerateRawPasscode() string {
@@ -51,49 +19,38 @@ func GenerateRawPasscode() string {
 	return string(s)
 }
 
-/* Find the number of lines present in the specified file. Used for getting the
-total number of possible adjectives to search through that are present
-in *adjectives.txt* */
-func parseWordsCount() (int, error) {
-	file, err := os.Open(adjectivesPath)
-	if err != nil {
-		return 0, err
-	}
-	defer file.Close()
-	buf := make([]byte, 32*1024)
-	count := 0
-	lineSep := []byte{'\n'}
+/* Validates if the provided hash index has the authority to make a post at
+this time */
+func ValidateHashTiming(lastPostTime time.Time, hashIndex int) bool {
+	prevTime := lastPostTime.Unix()
+	curTime := time.Now().Unix()
+	daysElapsed := (curTime - prevTime) / DAYS_INT
 
-	// Keeps reading buffers, counting line separations
-	for {
-		c, err := file.Read(buf)
-		count += bytes.Count(buf[:c], lineSep)
-
-		if err != nil && err != io.EOF {
-			return 0, err
-		} else if err == io.EOF {
-			break
-		}
+	// the next person can exclusively make a post for 5 days
+	if hashIndex <= 0 && daysElapsed < 5 {
+		return true
 	}
-	return count + 1, nil
-}
 
-/* Parses a word at the specificed random index from *adjectives.txt*.
-Does so by scanning lines until the index is reached
-Returns: string; the parsed word */
-func parseWord(index int) (string, error) {
-	file, err := os.Open(adjectivesPath)
-	if err != nil {
-		return "", err
+	// the previous person can also make a post within a week
+	if hashIndex <= 1 && daysElapsed >= 5 {
+		return true
 	}
-	defer file.Close()
-	scanner := bufio.NewScanner(file)
-	scanner.Split(bufio.ScanLines)
 
-	scanCount := 0
-	for scanner.Scan() && scanCount < index {
-		scanner.Bytes()
-		scanCount++
+	// the previous two people can also make a post within 9 days
+	if hashIndex <= 2 && daysElapsed >= 7 {
+		return true
 	}
-	return scanner.Text(), nil
+
+	// the previous 3 people can make a post within 10 days
+	if hashIndex <= 3 && daysElapsed >= 9 {
+		return true
+	}
+
+	// all candidate hashes, including the genesis hash, can make a post
+	// after 10 days have elapsed
+	if daysElapsed >= 10 {
+		return true
+	}
+
+	return false
 }

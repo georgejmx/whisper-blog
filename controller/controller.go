@@ -74,7 +74,7 @@ func (dbo *DbController) GrabPosts() ([]tp.Post, error) {
 }
 
 /* Gets the timestamp of the latest post */
-func (dbo *DbController) GrabLatestPosttime() (time.Time, error) {
+func (dbo *DbController) GrabLatestTimestamp() (time.Time, error) {
 	var timestamp time.Time
 
 	tx, _ := dbo.db.Begin()
@@ -109,7 +109,7 @@ func (dbo *DbController) AddPost(post tp.Post) error {
 }
 
 /* Selects the latest passcode hash from the database, for use in validation */
-func (dbo *DbController) SelectHash() (string, error) {
+func (dbo *DbController) SelectLatestHash() (string, error) {
 	var hash string
 
 	tx, _ := dbo.db.Begin()

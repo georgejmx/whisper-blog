@@ -7,18 +7,16 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"errors"
-	"time"
 	tp "whisper-blog/types"
 	u "whisper-blog/utils"
 )
 
 /* Function to validate the provided hash against the chain law, determining
 whether a lawful post can be made */
-// TODO: Encode the proper chain law e.g after 6 days an extra hash is valid
 func ValidateHash(dbo tp.ControllerTemplate, hash string) (bool, error) {
 	// Grabbing stored hashes and latest timestamp
 	storedHashes, err := dbo.SelectCandidateHashes()
-	lastPostTime, err2 := dbo.GrabLatestPosttime()
+	lastPostTime, err2 := dbo.GrabLatestTimestamp()
 	if err != nil {
 		return false, err
 	} else if err2 != nil {
@@ -28,30 +26,20 @@ func ValidateHash(dbo tp.ControllerTemplate, hash string) (bool, error) {
 	// Validating the **Chain Law**
 	hashIndex := findCandidateIndex(hash, storedHashes)
 	if hashIndex == -1 {
-		return false, errors.New("hash does not exist in the blog")
+		return false, errors.New("a: hash will never have ability to make post")
 	}
-	isValTime, err := validateHashTiming(lastPostTime, hashIndex)
-	if err != nil {
-		return false, errors.New("error when validing hash timing")
-	} else if !isValTime {
-		return false, errors.New("hash failed validation timing")
+	if isValTime := u.ValidateHashTiming(lastPostTime, hashIndex); !isValTime {
+		return false, errors.New("b: hash failed validation timing")
 	}
 
 	// We have a valid and correctly timed hash
 	return true, nil
 }
 
-func validateHashTiming(lastPostTime time.Time, hashIndex int) (bool, error) {
-	if hashIndex == 0 {
-		return true, nil
-	}
-	return false, nil
-}
-
 /* Sets the new randomly generated hash by inserting into the database. Returns
 A string which is the new raw text symmetrically encrypted */
 func SetHashAndRetrieveCipher(dbo tp.ControllerTemplate) (string, error) {
-	oldHash, err := dbo.SelectHash()
+	oldHash, err := dbo.SelectLatestHash()
 	if err != nil {
 		return "fail", err
 	}

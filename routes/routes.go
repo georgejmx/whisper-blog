@@ -5,7 +5,7 @@ import (
 	d "whisper-blog/controller"
 	x "whisper-blog/security"
 	tp "whisper-blog/types"
-	u "whisper-blog/utils"
+	w "whisper-blog/words"
 
 	"github.com/gin-gonic/gin"
 )
@@ -41,7 +41,7 @@ func AddPost(c *gin.Context) {
 	}
 
 	// Generating post descriptors then performing db insert of post
-	post.Descriptors, err = u.GenerateDescriptors()
+	post.Descriptors, err = w.GenerateDescriptors()
 	if err != nil {
 		sendFailure(c, "unable to generate descriptors for post")
 		return

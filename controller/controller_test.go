@@ -66,7 +66,7 @@ func TestGrabPostsFailure(t *testing.T) {
 }
 
 /* Tests that selecting a hash is a valid query and does whats expected */
-func TestSelectHash(t *testing.T) {
+func TestSelectLatestHash(t *testing.T) {
 	setupTest(t)
 
 	// Needed for correct query matching of nested queries
@@ -82,7 +82,7 @@ func TestSelectHash(t *testing.T) {
 	(select max(id) from Passcode)`).WillReturnRows(rows)
 	mock.ExpectCommit()
 
-	if _, err = testDbo.SelectHash(); err != nil {
+	if _, err = testDbo.SelectLatestHash(); err != nil {
 		t.Logf("error not expected when selecting hash: %s", err)
 		t.Fail()
 	}

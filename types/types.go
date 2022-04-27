@@ -18,8 +18,8 @@ type Post struct {
 type ControllerTemplate interface {
 	Init() error
 	GrabPosts() ([]Post, error)
-	GrabLatestPosttime() (time.Time, error)
-	SelectHash() (string, error)
+	GrabLatestTimestamp() (time.Time, error)
+	SelectLatestHash() (string, error)
 	SelectCandidateHashes() ([5]string, error)
 	AddPost(post Post) error
 	InsertHash(hash string) error
