@@ -14,6 +14,15 @@ type Post struct {
 	Hash        string    `json:"hash,omitempty"`
 }
 
+// Represents a reaction on the UI
+type Reaction struct {
+	Id           int    `json:"id"`
+	PostId       int    `json:"postId"`
+	Descriptor   string `json:"descriptor"`
+	Gravitas     int    `json:"gravitas"`
+	GravitasHash string `json:"hash,omitempty"`
+}
+
 // A template for an object that performs database interactions
 type ControllerTemplate interface {
 	Init() error

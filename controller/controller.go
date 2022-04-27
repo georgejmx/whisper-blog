@@ -43,7 +43,18 @@ func (dbo *DbController) Init() error {
 		id integer primary key autoincrement not null,
 		hash varchar(64) not null
 	)`
-	_, err = dbo.db.Exec(query2)
+	if _, err = dbo.db.Exec(query2); err != nil {
+		return err
+	}
+
+	query3 := `create table if not exists Reaction (
+		id integer primary key autoincrement not null,
+		postId integer not null,
+		descriptor varchar(20) not null,
+		gravitas integer not null,
+		foreign key(postId) references Post(id)
+	)`
+	_, err = dbo.db.Exec(query3)
 	return err
 }
 
@@ -71,6 +82,31 @@ func (dbo *DbController) GrabPosts() ([]tp.Post, error) {
 
 	rows.Close()
 	return posts, tx.Commit()
+}
+
+func (dbo *DbController) GrabPostReactions(postId int) ([]tp.Reaction, error) {
+	var reactions []tp.Reaction
+	tx, _ := dbo.db.Begin()
+
+	// Getting rows from query
+	rows, err := tx.Query(`select descriptor, sum(gravitas) total_gravitas from 
+		Reaction group by descriptor`, postId)
+	if err != nil {
+		tx.Rollback()
+		return reactions, err
+	}
+
+	// Adding reaction rows from database table to the
+	for rows.Next() {
+		var reaction tp.Reaction
+		if err = rows.Scan(&reaction.Descriptor, &reaction.Gravitas); err != nil {
+			return reactions, err
+		}
+		reactions = append(reactions, reaction)
+	}
+
+	rows.Close()
+	return reactions, tx.Commit()
 }
 
 /* Gets the timestamp of the latest post */
@@ -101,6 +137,19 @@ func (dbo *DbController) AddPost(post tp.Post) error {
 	_, err := tx.Exec(`insert into Post (title, author, contents, descriptors, 
 		tag) values (?, ?, ?, ?, ?)`,
 		post.Title, post.Author, post.Contents, post.Descriptors, post.Tag)
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+	return tx.Commit()
+}
+
+/* Adds a new reaction to db */
+func (dbo *DbController) AddReaction(reaction tp.Reaction) error {
+	tx, _ := dbo.db.Begin()
+	_, err := tx.Exec(`insert into Reaction (postId, descriptor, gravitas) 
+		values (?, ?, ?)`, reaction.PostId, reaction.Descriptor,
+		reaction.Gravitas)
 	if err != nil {
 		tx.Rollback()
 		return err
