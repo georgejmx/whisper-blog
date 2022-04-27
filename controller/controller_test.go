@@ -89,6 +89,45 @@ func TestSelectHash(t *testing.T) {
 	teardownTest(t)
 }
 
+/* Tests that selecting candidate hashes works as expected*/
+func TestSelectCandidateHashes(t *testing.T) {
+	setupTest(t)
+
+	testDbo.db, mock, err = sqlmock.New(
+		sqlmock.QueryMatcherOption(sqlmock.QueryMatcherEqual))
+	mock.ExpectBegin()
+
+	// Testing getting recent hashes
+	sampleHashes := [4]string{
+		"9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08",
+		"9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a09",
+		"9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a0a",
+		"9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a0b",
+	}
+	rows := sqlmock.NewRows([]string{"hash"}).AddRow(sampleHashes[0]).
+		AddRow(sampleHashes[1]).AddRow(sampleHashes[2]).
+		AddRow(sampleHashes[3])
+	mock.ExpectQuery(`select hash from Passcode order by id desc limit 4`).
+		WillReturnRows(rows)
+
+	// Testing getting genesis hash
+	rows2 := sqlmock.NewRows([]string{"hash"}).
+		AddRow("9f86d081884c7d659a2feaa055ad015a3bf4f1b2b0b822cd15d6c15b0f00a0bc")
+	mock.ExpectQuery(`select hash from Passcode order by id asc limit 1`).
+		WillReturnRows(rows2)
+
+	// Tests that these hashes are correctly sandwiched together
+	mock.ExpectCommit()
+	testHashes, err := testDbo.SelectCandidateHashes()
+	if err != nil {
+		t.Logf("error not expected when selecting hashes: %s", err)
+		t.Fail()
+	}
+	t.Logf("hashes fetched: %v\n", testHashes)
+
+	teardownTest(t)
+}
+
 /* Tests that the AddPost controller behaves as expected. Ensures that the SQL
 driver correctly processes a successful entry */
 func TestAddPostSuccess(t *testing.T) {

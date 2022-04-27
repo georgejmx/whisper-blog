@@ -90,7 +90,6 @@ func (dbo *DbController) AddPost(post tp.Post) error {
 }
 
 /* Selects the latest passcode hash from the database, for use in validation */
-// TODO: Paramerise to grab the most recent 3 hashes and genesis hash
 func (dbo *DbController) SelectHash() (string, error) {
 	var hash string
 
@@ -106,6 +105,42 @@ func (dbo *DbController) SelectHash() (string, error) {
 		return hash, err
 	}
 	return hash, tx.Commit()
+}
+
+/* Selects the 5 hashes that can be used for post or reaction validation. This
+is an array of the form [latest hash, second latest hash, third latest,
+fourth latest, genesis hash] */
+func (dbo *DbController) SelectCandidateHashes() ([5]string, error) {
+	hashes := [5]string{"", "", "", "", ""}
+	tx, _ := dbo.db.Begin()
+
+	// Selecting the most recent 4 hashes with such query, then parsing
+	topRows, err := tx.Query(`select hash from Passcode order by id desc limit 4`)
+	if err != nil {
+		tx.Rollback()
+		return hashes, err
+	}
+	i := 0
+	for topRows.Next() && i < 4 {
+		if err = topRows.Scan(&hashes[i]); err != nil {
+			return hashes, err
+		}
+		i++
+	}
+	topRows.Close()
+
+	// Selecting the genesis row, then returning the complete array
+	genesisRow, err := tx.Query(
+		`select hash from Passcode order by id asc limit 1`)
+	if err != nil {
+		tx.Rollback()
+		return hashes, err
+	}
+	genesisRow.Next()
+	if err = genesisRow.Scan(&hashes[4]); err != nil {
+		return hashes, err
+	}
+	return hashes, tx.Commit()
 }
 
 /* Adds a new row to the passcode table, with a generated hash */
