@@ -2,6 +2,7 @@ package controller
 
 import (
 	"database/sql"
+	"time"
 	tp "whisper-blog/types"
 
 	_ "github.com/mattn/go-sqlite3"
@@ -72,6 +73,24 @@ func (dbo *DbController) GrabPosts() ([]tp.Post, error) {
 	return posts, tx.Commit()
 }
 
+/* Gets the timestamp of the latest post */
+func (dbo *DbController) GrabLatestPosttime() (time.Time, error) {
+	var timestamp time.Time
+
+	tx, _ := dbo.db.Begin()
+	row, err := tx.Query(`select time from Post where id = 
+		(select max(id) from Post)`)
+	if err != nil {
+		tx.Rollback()
+		return timestamp, err
+	}
+	row.Next()
+	if err = row.Scan(&timestamp); err != nil {
+		return timestamp, err
+	}
+	return timestamp, tx.Commit()
+}
+
 /* Adds a new post to the blog database. Using user data from the frontend
 and a generated descriptors and tag
 Params: Post with the fields title, author, contents, descriptors, tag,
@@ -115,7 +134,8 @@ func (dbo *DbController) SelectCandidateHashes() ([5]string, error) {
 	tx, _ := dbo.db.Begin()
 
 	// Selecting the most recent 4 hashes with such query, then parsing
-	topRows, err := tx.Query(`select hash from Passcode order by id desc limit 4`)
+	topRows, err := tx.Query(
+		`select hash from Passcode order by id desc limit 4`)
 	if err != nil {
 		tx.Rollback()
 		return hashes, err
