@@ -2,6 +2,7 @@ package utils
 
 import (
 	"math/rand"
+	"strings"
 	"time"
 )
 
@@ -52,5 +53,14 @@ func ValidateHashTiming(lastPostTime time.Time, hashIndex int) bool {
 		return true
 	}
 
+	return false
+}
+
+/* Checks if the descriptor is in the descriptors string */
+func CheckDescriptor(descriptor, descriptors string) bool {
+	if strings.Contains(descriptors, descriptor) &&
+		!strings.Contains(descriptor, ";") {
+		return true
+	}
 	return false
 }

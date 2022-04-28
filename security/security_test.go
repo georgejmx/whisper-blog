@@ -53,6 +53,61 @@ func TestValidateHashFailure(t *testing.T) {
 	}
 }
 
+/* Checks that hash validation for hashes behaves properly */
+func TestValidateReactionHash(t *testing.T) {
+	controller := &mock.MockController{}
+
+	// Trying an unused candidate hash
+	isValid, gravitas, err := ValidateReactionHash(
+		controller, mock.MockHashes[2], 1)
+	if err != nil || gravitas != 6 || !isValid {
+		t.Log("expected no error and gravitas=6 from unused candidate hash")
+		t.Fail()
+	}
+
+	// Trying the genesis hash (unused)
+	isValid, gravitas, err = ValidateReactionHash(
+		controller, mock.MockHashes[4], 1)
+	if err != nil || gravitas != 1 || !isValid {
+		t.Log("expected no error and gravitas=6 from unused candidate hash")
+		t.Fail()
+	}
+
+	// Checks that when hash is empty, returns isValid=false but no error
+	isValid, gravitas, err = ValidateReactionHash(controller, "", 1)
+	if err != nil || gravitas != 2 || isValid {
+		t.Logf("gravitas=%v, isValid=%v, err=%s\n", gravitas, isValid, err)
+		t.Fail()
+	}
+
+}
+
+/* Checks that hash validation for hashes fails when expected */
+func TestValidateReactionHashFails(t *testing.T) {
+	controller := &mock.MockController{}
+
+	// Checks that attempting to use a hash twice fails
+	isValid, _, err := ValidateReactionHash(controller, mock.MockHashes[1], 1)
+	if err == nil || isValid {
+		t.Log("expected an error for an already used hash")
+		t.Fail()
+	}
+
+	// Checks that attempting to use a hash twice fails again
+	isValid, _, err = ValidateReactionHash(controller, mock.MockHashes[3], 1)
+	if err == nil || isValid {
+		t.Log("expected an error for an already used hash")
+		t.Fail()
+	}
+
+	// Checks that attempting react on your own post fails
+	isValid, _, err = ValidateReactionHash(controller, mock.MockHashes[0], 1)
+	if err == nil || isValid {
+		t.Log("expected an error for an already used hash")
+		t.Fail()
+	}
+}
+
 /* Checks that storing and retrieving hashes behaves properly */
 func TestSetHashAndRetrieveCipher(t *testing.T) {
 	controller := &mock.MockController{}

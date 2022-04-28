@@ -14,6 +14,7 @@ func main() {
 	router := gin.Default()
 	router.GET("/data", r.GetChain)
 	router.POST("/data/post", r.AddPost)
+	router.POST("/data/reaction", r.AddReaction)
 
 	// Serving frontend at root path, then running
 	router.GET("/", gin.WrapH(http.FileServer(http.FS(os.DirFS("client/dist")))))

@@ -26,10 +26,15 @@ type Reaction struct {
 // A template for an object that performs database interactions
 type ControllerTemplate interface {
 	Init() error
+	AddPost(post Post) error
+	AddReaction(reaction Reaction) error
 	GrabPosts() ([]Post, error)
-	GrabLatestTimestamp() (time.Time, error)
+	GrabPostReactions(postId int) ([]Reaction, error)
+	InsertHash(hash string) error
+	SelectLatestTimestamp() (time.Time, error)
 	SelectLatestHash() (string, error)
 	SelectCandidateHashes() ([5]string, error)
-	AddPost(post Post) error
-	InsertHash(hash string) error
+	SelectPostReactionHashes(postId int) ([5]string, error)
+	SelectDescriptors(postId int) (string, error)
+	SelectAnonReactionCount(postId int) (int, error)
 }

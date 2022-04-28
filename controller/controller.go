@@ -52,13 +52,15 @@ func (dbo *DbController) Init() error {
 		postId integer not null,
 		descriptor varchar(20) not null,
 		gravitas integer not null,
-		foreign key(postId) references Post(id)
+		gravitasHash varchar(64),
+		foreign key(postId) references Post(id),
+		check (gravitas <= 6)
 	)`
 	_, err = dbo.db.Exec(query3)
 	return err
 }
 
-// TODO: make this into GrabData at a later date, to include reactions
+/* Gets all Post tuples from sqlite */
 func (dbo *DbController) GrabPosts() ([]tp.Post, error) {
 	var posts []tp.Post
 	tx, _ := dbo.db.Begin()
@@ -84,6 +86,8 @@ func (dbo *DbController) GrabPosts() ([]tp.Post, error) {
 	return posts, tx.Commit()
 }
 
+/* Gets Reaction tuples from sqlite grouped by each descriptor. Returns a slice
+with an ascending list of such tuples ordered by their total gravitas */
 func (dbo *DbController) GrabPostReactions(postId int) ([]tp.Reaction, error) {
 	var reactions []tp.Reaction
 	tx, _ := dbo.db.Begin()
@@ -99,7 +103,8 @@ func (dbo *DbController) GrabPostReactions(postId int) ([]tp.Reaction, error) {
 	// Adding reaction rows from database table to the
 	for rows.Next() {
 		var reaction tp.Reaction
-		if err = rows.Scan(&reaction.Descriptor, &reaction.Gravitas); err != nil {
+		err = rows.Scan(&reaction.Descriptor, &reaction.Gravitas)
+		if err != nil {
 			return reactions, err
 		}
 		reactions = append(reactions, reaction)
@@ -110,7 +115,7 @@ func (dbo *DbController) GrabPostReactions(postId int) ([]tp.Reaction, error) {
 }
 
 /* Gets the timestamp of the latest post */
-func (dbo *DbController) GrabLatestTimestamp() (time.Time, error) {
+func (dbo *DbController) SelectLatestTimestamp() (time.Time, error) {
 	var timestamp time.Time
 
 	tx, _ := dbo.db.Begin()
@@ -128,9 +133,8 @@ func (dbo *DbController) GrabLatestTimestamp() (time.Time, error) {
 }
 
 /* Adds a new post to the blog database. Using user data from the frontend
-and a generated descriptors and tag
-Params: Post with the fields title, author, contents, descriptors, tag,
-	codeHash populated
+and a generated descriptors and tag. // Params: Post with the fields title,
+author, contents, descriptors, tag, codeHash populated //
 Ensures that all data for a post has been entered */
 func (dbo *DbController) AddPost(post tp.Post) error {
 	tx, _ := dbo.db.Begin()
@@ -147,9 +151,9 @@ func (dbo *DbController) AddPost(post tp.Post) error {
 /* Adds a new reaction to db */
 func (dbo *DbController) AddReaction(reaction tp.Reaction) error {
 	tx, _ := dbo.db.Begin()
-	_, err := tx.Exec(`insert into Reaction (postId, descriptor, gravitas) 
-		values (?, ?, ?)`, reaction.PostId, reaction.Descriptor,
-		reaction.Gravitas)
+	_, err := tx.Exec(`insert into Reaction (postId, descriptor, gravitas
+		gravitasHash) values (?, ?, ?, ?)`, reaction.PostId,
+		reaction.Descriptor, reaction.Gravitas, reaction.GravitasHash)
 	if err != nil {
 		tx.Rollback()
 		return err
@@ -210,6 +214,67 @@ func (dbo *DbController) SelectCandidateHashes() ([5]string, error) {
 		return hashes, err
 	}
 	return hashes, tx.Commit()
+}
+
+/* Selects the reaction hashes associated with a given post */
+func (dbo *DbController) SelectPostReactionHashes(postId int) ([5]string, error) {
+	reactionHashes := [5]string{"", "", "", "", ""}
+	tx, _ := dbo.db.Begin()
+
+	// Selecting all such hashes
+	rows, err := tx.Query(`select distinct gravitasHash from Reaction where 
+		postId = ?`, postId)
+	if err != nil {
+		tx.Rollback()
+		return reactionHashes, err
+	}
+	i := 0
+	for rows.Next() && i < 4 {
+		var reactionHash string
+		if err := rows.Scan(&reactionHash); err != nil {
+			return reactionHashes, err
+		}
+		reactionHashes[i] = reactionHash
+		i++
+	}
+	rows.Close()
+	return reactionHashes, tx.Commit()
+}
+
+/* Selects the descriptors string from the post with id *postId* */
+func (dbo *DbController) SelectDescriptors(postId int) (string, error) {
+	var descriptors string
+
+	tx, _ := dbo.db.Begin()
+	row, err := tx.Query(`select descriptors from Post where id = ?`, postId)
+	if err != nil {
+		tx.Rollback()
+		return descriptors, err
+	}
+	row.Next()
+	if err = row.Scan(&descriptors); err != nil {
+		return descriptors, err
+	}
+	return descriptors, tx.Commit()
+}
+
+/* Selects the number of anonymous reactions (those with gravitas 2) made on
+the specified post */
+func (dbo *DbController) SelectAnonReactionCount(postId int) (int, error) {
+	var count int
+
+	tx, _ := dbo.db.Begin()
+	row, err := tx.Query(`select count(*) from Reaction where gravitas = 2 
+		and postId = ?`, postId)
+	if err != nil {
+		tx.Rollback()
+		return 0, err
+	}
+	row.Next()
+	if err = row.Scan(&count); err != nil {
+		return count, err
+	}
+	return count, tx.Commit()
 }
 
 /* Adds a new row to the passcode table, with a generated hash */

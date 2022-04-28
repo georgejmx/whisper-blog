@@ -8,14 +8,36 @@ import (
 // Mock database controller, used by all unit tests
 type MockController struct{}
 
+// Data to populate this mock controller
 var (
+	MockPost = tp.Post{
+		Id:          1,
+		Title:       "test",
+		Author:      "tester",
+		Contents:    "test contents",
+		Tag:         0,
+		Descriptors: "test;experimental;mocking",
+		Time:        generateMockTime(),
+	}
+	MockReaction = tp.Reaction{
+		Id:         1,
+		PostId:     1,
+		Descriptor: "experimental",
+		Gravitas:   6,
+	}
+	MockReaction2 = tp.Reaction{
+		Id:         2,
+		PostId:     1,
+		Descriptor: "mocking",
+		Gravitas:   4,
+	}
 	MockHashes = [5]string{
-		"UNUSEDc1884c7659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a09",
-		"PREVIOUS8184c7d659a2feaa0c55ad015a3bf4f1b2b0b82215d6c15b0f00a08",
-		"PENULTIMATE4c7d659a2feaa0c55ad015a3bf4f1b2b0b82215d6c15b0f00a0a",
-		"THIRDccc84c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a0b",
-		"GENESISccc87d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a0b"}
-	InvalidMockHash = `INVALIDc884c7659a2feaa0c55ad015a3bf4f1b2b0b822cd1
+		"UNUSEDc1884c7659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a09a",
+		"PREVIOUS8184c7d659a2feaa0c55ad015a3bf4f1b2b0b82215d6c15b0f00a08a",
+		"PENULTIMATE4c7d659a2feaa0c55ad015a3bf4f1b2b0b82215d6c15b0f00a0aa",
+		"THIRDccc84c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a0ba",
+		"GENESISccc87d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a0ba"}
+	InvalidMockHash = `INVALIDc884c7659a2feaa0c55ad015a3bf4f1b2b0b822cd1a
 		5d6c15b0f00a09`
 )
 
@@ -25,26 +47,33 @@ func (mc *MockController) Init() error {
 }
 
 // Mock method implementation
-func (mc *MockController) GrabPosts() ([]tp.Post, error) {
-	testPost := tp.Post{Id: 1, Title: "test", Author: "tester",
-		Contents: "test contents", Tag: 0, Descriptors: "t;t;t",
-		Time: generateMockTime()}
-	return []tp.Post{testPost}, nil
-}
-
-// Mock method implementation
-func (mc *MockController) GrabLatestTimestamp() (time.Time, error) {
-	return generateMockTime(), nil
-}
-
-// Mock method implementation
 func (mc *MockController) AddPost(post tp.Post) error {
 	return nil
 }
 
 // Mock method implementation
-func (mc *MockController) SelectCandidateHashes() ([5]string, error) {
-	return MockHashes, nil
+func (mc *MockController) AddReaction(reaction tp.Reaction) error {
+	return nil
+}
+
+// Mock method implementation
+func (mc *MockController) GrabPosts() ([]tp.Post, error) {
+	return []tp.Post{MockPost}, nil
+}
+
+// Mock method implementation
+func (mc *MockController) GrabPostReactions(postId int) ([]tp.Reaction, error) {
+	return []tp.Reaction{MockReaction, MockReaction2}, nil
+}
+
+// Mock method implementation
+func (mc *MockController) InsertHash(hash string) error {
+	return nil
+}
+
+// Mock method implementation
+func (mc *MockController) SelectLatestTimestamp() (time.Time, error) {
+	return generateMockTime(), nil
 }
 
 // Mock method implementation
@@ -53,8 +82,32 @@ func (mc *MockController) SelectLatestHash() (string, error) {
 }
 
 // Mock method implementation
-func (mc *MockController) InsertHash(hash string) error {
-	return nil
+func (mc *MockController) SelectCandidateHashes() ([5]string, error) {
+	return MockHashes, nil
+}
+
+// Mock method implementation
+func (mc *MockController) SelectPostReactionHashes(
+	postId int) ([5]string, error) {
+	return [5]string{MockHashes[1], MockHashes[3], "", "", ""}, nil
+}
+
+// Mock method implementation
+func (mc *MockController) SelectDescriptors(postId int) (string, error) {
+	if postId == 1 {
+		return MockPost.Descriptors, nil
+	} else {
+		return "", nil
+	}
+}
+
+// Mock method implementation
+func (mc *MockController) SelectAnonReactionCount(postId int) (int, error) {
+	if postId == 1 {
+		return 2, nil
+	} else {
+		return 0, nil
+	}
 }
 
 /* Generates a mock time, which is just over 1 week ago */

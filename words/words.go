@@ -26,17 +26,22 @@ func GenerateDescriptors() (string, error) {
 
 	// Generating 10 random words using loop
 	i := 0
-	rand.Seed(time.Now().UnixNano())
 	for i < 10 {
-		index := rand.Intn(wordCount)
-		decriptor, err := parseWord(index)
-		if err != nil {
-			return "fail", err
-		}
-		descriptors[i] = decriptor
+		descriptors[i] = GenerateDescriptor(wordCount)
 		i++
 	}
 	return strings.Join(descriptors[:], ";"), nil
+}
+
+/* Generates a single descriptor */
+func GenerateDescriptor(wordCount int) string {
+	rand.Seed(time.Now().UnixNano())
+	index := rand.Intn(wordCount)
+	descriptor, err := parseWord(index)
+	if err != nil {
+		return "error"
+	}
+	return descriptor
 }
 
 /* Find the number of lines present in the specified file. Used for getting the
