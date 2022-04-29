@@ -1,12 +1,22 @@
 package controller
 
 import (
+	"database/sql/driver"
 	"fmt"
 	"testing"
+	"time"
 	tp "whisper-blog/types"
 
 	"github.com/DATA-DOG/go-sqlmock"
 )
+
+type AnyTime struct{}
+
+// Match satisfies sqlmock.Argument interface
+func (a AnyTime) Match(v driver.Value) bool {
+	_, ok := v.(time.Time)
+	return ok
+}
 
 var (
 	testDbo DbController
@@ -28,15 +38,20 @@ driver correctly processes grabbing posts */
 func TestGrabPostsSuccess(t *testing.T) {
 	setupTest(t)
 
+	// Needed for correct query matching of nested query with time type
+	testDbo.db, mock, err = sqlmock.New(
+		sqlmock.QueryMatcherOption(sqlmock.QueryMatcherEqual))
+
 	// Mocking db operations by populating this mock database
-	rows := sqlmock.NewRows(
-		[]string{"id", "title", "author", "contents", "tag", "descriptors"}).
-		AddRow(1, "test title", "tester", "testing is so cool", 3, "t;t;t;t").
-		AddRow(2, "test title", "tester 2", "bruh", 4, "t;t;t;t")
+	headers := []string{"id", "title", "author", "contents", "tag",
+		"descriptors", "time"}
+	rows := sqlmock.NewRows(headers).
+		AddRow(1, "test title", "tester", "testing is so cool", 3,
+			"t;t;t;t", time.Now()).
+		AddRow(2, "test title", "tester 2", "bruh", 4, "t;t;t;t", time.Now())
 
 	mock.ExpectBegin()
-	mock.ExpectQuery(`select id, title, author, contents, tag, descriptors 
-		from Post`).WillReturnRows(rows)
+	mock.ExpectQuery(`select * from Post order by id desc`).WillReturnRows(rows)
 	mock.ExpectCommit()
 
 	// Running the real function with above parameters
@@ -53,8 +68,8 @@ func TestGrabPostsFailure(t *testing.T) {
 	setupTest(t)
 
 	mock.ExpectBegin()
-	mock.ExpectQuery(`select id, title, author, contents, tag, descriptors 
-		from Post`).WillReturnError(fmt.Errorf("some error"))
+	mock.ExpectQuery(`select * from Post order by id desc`).
+		WillReturnError(fmt.Errorf("some error"))
 	mock.ExpectRollback()
 
 	// Running the real function with above parameters
@@ -62,7 +77,7 @@ func TestGrabPostsFailure(t *testing.T) {
 		t.Logf("expecting error when grabbing posts: %s", err)
 		t.Fail()
 	}
-	teardownTest(t)
+	testDbo.db.Close()
 }
 
 /* Tests that selecting a hash is a valid query and does whats expected */

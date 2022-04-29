@@ -43,8 +43,8 @@ func TestParseWord(t *testing.T) {
 	}
 
 	outputEnd, _ := parseWord(1346)
-	if outputEnd != "zigzag" {
-		t.Logf("expecting 'zigzag'. found %s", output)
+	if outputEnd != "zany" {
+		t.Logf("expecting 'zany'. found %s", outputEnd)
 		t.Fail()
 	}
 }

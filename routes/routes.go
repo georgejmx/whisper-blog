@@ -125,7 +125,7 @@ func AddReaction(c *gin.Context) {
 	// Sending success response
 	c.JSON(201, gin.H{
 		"message": "reaction successful",
-		"reply":   w.GenerateDescriptor(1350),
+		"reply":   w.GenerateDescriptor(1349),
 		"marker":  1,
 	})
 }
