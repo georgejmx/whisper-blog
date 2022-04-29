@@ -29,40 +29,43 @@ func (dbo *DbController) Init() error {
 	dbo.db.SetMaxOpenConns(10)
 	dbo.db.SetMaxIdleConns(10)
 
-	// Configure database tables correctly
-	query := `create table if not exists Post (
-		id integer primary key autoincrement not null,
-		title varchar(40) not null unique,
-		author varchar(10),
-		contents varchar(1500) not null,
-		tag integer not null,
-		descriptors varchar(210),
-		time datetime default current_timestamp,
-		check (tag >= 0 and tag < 8)
-	)`
-	if _, err = dbo.db.Exec(query); err != nil {
-		return err
+	// Define database tables
+	queries := [3]string{
+		`create table if not exists Post (
+			id integer primary key autoincrement not null,
+			title varchar(40) not null unique,
+			author varchar(10),
+			contents varchar(1500) not null,
+			tag integer not null,
+			descriptors varchar(210),
+			time datetime default current_timestamp,
+			check (tag >= 0 and tag < 8)
+		)`,
+		`create table if not exists Passcode (
+			id integer primary key autoincrement not null,
+			hash varchar(64) not null
+		)`,
+		`create table if not exists Reaction (
+			id integer primary key autoincrement not null,
+			postId integer not null,
+			descriptor varchar(20) not null,
+			gravitas integer not null,
+			gravitasHash varchar(64),
+			foreign key(postId) references Post(id),
+			check (gravitas <= 6)
+		)`,
 	}
 
-	query2 := `create table if not exists Passcode (
-		id integer primary key autoincrement not null,
-		hash varchar(64) not null
-	)`
-	if _, err = dbo.db.Exec(query2); err != nil {
-		return err
+	// Execute all table creation on database
+	tx, _ := dbo.db.Begin()
+	for _, query := range queries {
+		_, err = tx.Exec(query)
+		if err != nil {
+			tx.Rollback()
+			return err
+		}
 	}
-
-	query3 := `create table if not exists Reaction (
-		id integer primary key autoincrement not null,
-		postId integer not null,
-		descriptor varchar(20) not null,
-		gravitas integer not null,
-		gravitasHash varchar(64),
-		foreign key(postId) references Post(id),
-		check (gravitas <= 6)
-	)`
-	_, err = dbo.db.Exec(query3)
-	return err
+	return tx.Commit()
 }
 
 /* Gets all Post tuples from sqlite */
@@ -297,11 +300,16 @@ func (dbo *DbController) InsertHash(hash string) error {
 func (dbo *DbController) Clear() bool {
 	queries := [3]string{`drop table Passcode`, `drop table Reaction`,
 		`drop table Post`}
+
+	// Execute all table creation on database
+	tx, _ := dbo.db.Begin()
 	for _, query := range queries {
-		if _, err := dbo.db.Exec(query); err != nil {
+		_, err := tx.Exec(query)
+		if err != nil {
+			tx.Rollback()
 			return false
 		}
 	}
 	dbo.db.Close()
-	return true
+	return tx.Commit() == nil
 }
