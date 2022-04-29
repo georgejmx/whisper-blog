@@ -3,7 +3,8 @@ package controller
 import (
 	"database/sql"
 	"time"
-	tp "whisper-blog/types"
+
+	tp "github.com/georgejmx/whisper-blog/types"
 
 	_ "github.com/mattn/go-sqlite3"
 )

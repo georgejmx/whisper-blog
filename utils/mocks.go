@@ -2,7 +2,8 @@ package utils
 
 import (
 	"time"
-	tp "whisper-blog/types"
+
+	tp "github.com/georgejmx/whisper-blog/types"
 )
 
 // Mock database controller, used by all unit tests

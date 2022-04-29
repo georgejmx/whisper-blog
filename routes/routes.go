@@ -3,11 +3,12 @@ package routes
 import (
 	"encoding/json"
 	"fmt"
-	d "whisper-blog/controller"
-	x "whisper-blog/security"
-	tp "whisper-blog/types"
-	u "whisper-blog/utils"
-	w "whisper-blog/words"
+
+	d "github.com/georgejmx/whisper-blog/controller"
+	x "github.com/georgejmx/whisper-blog/security"
+	tp "github.com/georgejmx/whisper-blog/types"
+	u "github.com/georgejmx/whisper-blog/utils"
+	w "github.com/georgejmx/whisper-blog/words"
 
 	"github.com/gin-gonic/gin"
 )

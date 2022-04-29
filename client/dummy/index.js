@@ -5,7 +5,8 @@ const axios = require('axios').default
  * This is where the current blog passcode should be provided for testing.
  * The new passcode will be dumped to console, then pasted here for more testing
  ***/
-const PASSCODE = 'VCsI6VF6k2H9'
+const PASSCODE = 'Cq9Fr2r5YX3w'
+const PASSCODE_28APRIL = 'VCsI6VF6k2H9'
 const PASSCODE_27APRIL = 'Tr83OAZ7tfUC'
 
 // Stores url and encryption settings that are mangled away from snoopers

@@ -1,9 +1,14 @@
+/* Copyright 2022 George Miller <georgejmx@pm.me>.
+Usage of this code is subject to a GNU license as detailed in the
+LICENSE file. */
+
 package main
 
 import (
 	"net/http"
 	"os"
-	r "whisper-blog/routes"
+
+	r "github.com/georgejmx/whisper-blog/routes"
 
 	"github.com/gin-gonic/gin"
 )

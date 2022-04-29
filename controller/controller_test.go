@@ -5,7 +5,8 @@ import (
 	"fmt"
 	"testing"
 	"time"
-	tp "whisper-blog/types"
+
+	tp "github.com/georgejmx/whisper-blog/types"
 
 	"github.com/DATA-DOG/go-sqlmock"
 )

@@ -2,7 +2,8 @@ package security
 
 import (
 	"testing"
-	mock "whisper-blog/utils"
+
+	mock "github.com/georgejmx/whisper-blog/utils"
 )
 
 /* Checks that the hash validation function behaves properly */

@@ -7,8 +7,9 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"errors"
-	tp "whisper-blog/types"
-	u "whisper-blog/utils"
+
+	tp "github.com/georgejmx/whisper-blog/types"
+	u "github.com/georgejmx/whisper-blog/utils"
 )
 
 /* Function to validate the provided hash against the **Chain Law**, determining
