@@ -4,20 +4,21 @@ import "time"
 
 // Represents a post on the UI
 type Post struct {
-	Id          int       `json:"id"`
-	Title       string    `json:"title"`
-	Author      string    `json:"author"`
-	Contents    string    `json:"contents"`
-	Tag         int       `json:"tag"`
-	Descriptors string    `json:"descriptors"`
-	Time        time.Time `json:"time"`
-	Hash        string    `json:"hash,omitempty"`
+	Id          int        `json:"id"`
+	Title       string     `json:"title"`
+	Author      string     `json:"author"`
+	Contents    string     `json:"contents"`
+	Tag         int        `json:"tag"`
+	Descriptors string     `json:"descriptors"`
+	Time        time.Time  `json:"time"`
+	Hash        string     `json:"hash,omitempty"`
+	Reactions   []Reaction `json:"reactions,omitempty"`
 }
 
 // Represents a reaction on the UI
 type Reaction struct {
-	Id           int    `json:"id"`
-	PostId       int    `json:"postId"`
+	Id           int    `json:"id,omitempty"`
+	PostId       int    `json:"postId,omitempty"`
 	Descriptor   string `json:"descriptor"`
 	Gravitas     int    `json:"gravitas"`
 	GravitasHash string `json:"hash,omitempty"`

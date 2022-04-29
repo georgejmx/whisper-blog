@@ -94,7 +94,7 @@ func (dbo *DbController) SelectPostReactions(postId int) ([]tp.Reaction, error) 
 
 	// Getting rows from query
 	rows, err := tx.Query(`select descriptor, sum(gravitas) total_gravitas from 
-		Reaction group by descriptor`, postId)
+		Reaction where postId = ? group by descriptor`, postId)
 	if err != nil {
 		tx.Rollback()
 		return reactions, err

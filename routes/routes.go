@@ -2,6 +2,7 @@ package routes
 
 import (
 	"encoding/json"
+	"fmt"
 	d "whisper-blog/controller"
 	x "whisper-blog/security"
 	tp "whisper-blog/types"
@@ -26,12 +27,25 @@ func SetupDatabase() {
 /* Gets the chain stored in backend. This inlcudes all posts and the top 3
 reactions for each post */
 func GetChain(c *gin.Context) {
+	// Selecting posts data
 	posts, err := dbo.SelectPosts()
 	if err != nil {
-		sendFailure(c, "database operation failed")
+		sendFailure(c, "selecting posts database operation failed")
 		return
 	}
-	c.JSON(200, posts)
+
+	// Attaching top reactions to each post, in a modified slice
+	var stampedPosts []tp.Post
+	for _, val := range posts {
+		postReactions, err := dbo.SelectPostReactions(val.Id)
+		if err != nil {
+			sendFailure(c, fmt.Sprintf("error getting reactions of %v", val.Id))
+		}
+		val.Reactions = postReactions
+		stampedPosts = append(stampedPosts, val)
+	}
+
+	c.JSON(200, stampedPosts)
 }
 
 /* Adds a Post contained in the request body to database, subject to
