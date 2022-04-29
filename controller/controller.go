@@ -61,7 +61,7 @@ func (dbo *DbController) Init() error {
 }
 
 /* Gets all Post tuples from sqlite */
-func (dbo *DbController) GrabPosts() ([]tp.Post, error) {
+func (dbo *DbController) SelectPosts() ([]tp.Post, error) {
 	var posts []tp.Post
 	tx, _ := dbo.db.Begin()
 
@@ -88,7 +88,7 @@ func (dbo *DbController) GrabPosts() ([]tp.Post, error) {
 
 /* Gets Reaction tuples from sqlite grouped by each descriptor. Returns a slice
 with an ascending list of such tuples ordered by their total gravitas */
-func (dbo *DbController) GrabPostReactions(postId int) ([]tp.Reaction, error) {
+func (dbo *DbController) SelectPostReactions(postId int) ([]tp.Reaction, error) {
 	var reactions []tp.Reaction
 	tx, _ := dbo.db.Begin()
 
@@ -136,7 +136,7 @@ func (dbo *DbController) SelectLatestTimestamp() (time.Time, error) {
 and a generated descriptors and tag. // Params: Post with the fields title,
 author, contents, descriptors, tag, codeHash populated //
 Ensures that all data for a post has been entered */
-func (dbo *DbController) AddPost(post tp.Post) error {
+func (dbo *DbController) InsertPost(post tp.Post) error {
 	tx, _ := dbo.db.Begin()
 	_, err := tx.Exec(`insert into Post (title, author, contents, descriptors, 
 		tag) values (?, ?, ?, ?, ?)`,
@@ -149,7 +149,7 @@ func (dbo *DbController) AddPost(post tp.Post) error {
 }
 
 /* Adds a new reaction to db */
-func (dbo *DbController) AddReaction(reaction tp.Reaction) error {
+func (dbo *DbController) InsertReaction(reaction tp.Reaction) error {
 	tx, _ := dbo.db.Begin()
 	_, err := tx.Exec(`insert into Reaction (postId, descriptor, gravitas
 		gravitasHash) values (?, ?, ?, ?)`, reaction.PostId,

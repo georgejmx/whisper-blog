@@ -23,6 +23,17 @@ func SetupDatabase() {
 	}
 }
 
+/* Gets the chain stored in backend. This inlcudes all posts and the top 3
+reactions for each post */
+func GetChain(c *gin.Context) {
+	posts, err := dbo.SelectPosts()
+	if err != nil {
+		sendFailure(c, "database operation failed")
+		return
+	}
+	c.JSON(200, posts)
+}
+
 /* Adds a Post contained in the request body to database, subject to
 validation */
 func AddPost(c *gin.Context) {
@@ -50,7 +61,7 @@ func AddPost(c *gin.Context) {
 	if err != nil {
 		sendFailure(c, "unable to generate descriptors for post")
 		return
-	} else if err = dbo.AddPost(post); err != nil {
+	} else if err = dbo.InsertPost(post); err != nil {
 		sendFailure(c, "database operation failed")
 		return
 	}
@@ -117,7 +128,7 @@ func AddReaction(c *gin.Context) {
 
 	}
 
-	if err := dbo.AddReaction(reaction); err != nil {
+	if err := dbo.InsertReaction(reaction); err != nil {
 		sendFailure(c, "error when performing db insert")
 		return
 	}
@@ -128,15 +139,6 @@ func AddReaction(c *gin.Context) {
 		"reply":   w.GenerateDescriptor(1349),
 		"marker":  1,
 	})
-}
-
-func GetChain(c *gin.Context) {
-	posts, err := dbo.GrabPosts()
-	if err != nil {
-		sendFailure(c, "database operation failed")
-		return
-	}
-	c.JSON(200, posts)
 }
 
 // Sends a HTTP failure response

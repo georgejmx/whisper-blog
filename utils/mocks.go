@@ -47,22 +47,22 @@ func (mc *MockController) Init() error {
 }
 
 // Mock method implementation
-func (mc *MockController) AddPost(post tp.Post) error {
+func (mc *MockController) InsertPost(post tp.Post) error {
 	return nil
 }
 
 // Mock method implementation
-func (mc *MockController) AddReaction(reaction tp.Reaction) error {
+func (mc *MockController) InsertReaction(reaction tp.Reaction) error {
 	return nil
 }
 
 // Mock method implementation
-func (mc *MockController) GrabPosts() ([]tp.Post, error) {
+func (mc *MockController) SelectPosts() ([]tp.Post, error) {
 	return []tp.Post{MockPost}, nil
 }
 
 // Mock method implementation
-func (mc *MockController) GrabPostReactions(postId int) ([]tp.Reaction, error) {
+func (mc *MockController) SelectPostReactions(postId int) ([]tp.Reaction, error) {
 	return []tp.Reaction{MockReaction, MockReaction2}, nil
 }
 

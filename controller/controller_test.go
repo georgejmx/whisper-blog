@@ -35,7 +35,7 @@ func setupTest(t *testing.T) {
 
 /* Tests that the GrabPost controller behaves as expected. Ensures that the SQL
 driver correctly processes grabbing posts */
-func TestGrabPostsSuccess(t *testing.T) {
+func TestSelectPostsSuccess(t *testing.T) {
 	setupTest(t)
 
 	// Needed for correct query matching of nested query with time type
@@ -55,7 +55,7 @@ func TestGrabPostsSuccess(t *testing.T) {
 	mock.ExpectCommit()
 
 	// Running the real function with above parameters
-	if _, err = testDbo.GrabPosts(); err != nil {
+	if _, err = testDbo.SelectPosts(); err != nil {
 		t.Logf("error not expected when grabbing posts: %s", err)
 		t.Fail()
 	}
@@ -64,7 +64,7 @@ func TestGrabPostsSuccess(t *testing.T) {
 
 /* Tests that the GrabPost controller behaves as expected. Ensures that the SQL
 driver correctly behaves in the case of an error */
-func TestGrabPostsFailure(t *testing.T) {
+func TestSelectPostsFailure(t *testing.T) {
 	setupTest(t)
 
 	mock.ExpectBegin()
@@ -73,7 +73,7 @@ func TestGrabPostsFailure(t *testing.T) {
 	mock.ExpectRollback()
 
 	// Running the real function with above parameters
-	if _, err = testDbo.GrabPosts(); err == nil {
+	if _, err = testDbo.SelectPosts(); err == nil {
 		t.Logf("expecting error when grabbing posts: %s", err)
 		t.Fail()
 	}
@@ -143,9 +143,9 @@ func TestSelectCandidateHashes(t *testing.T) {
 	teardownTest(t)
 }
 
-/* Tests that the AddPost controller behaves as expected. Ensures that the SQL
+/* Tests that the InsertPost controller behaves as expected. Ensures that the SQL
 driver correctly processes a successful entry */
-func TestAddPostSuccess(t *testing.T) {
+func TestInsertPostSuccess(t *testing.T) {
 	setupTest(t)
 
 	// Mocking db operations with test post
@@ -164,16 +164,16 @@ func TestAddPostSuccess(t *testing.T) {
 	mock.ExpectCommit()
 
 	// Adding test post to mock database
-	if err = testDbo.AddPost(testPost); err != nil {
+	if err = testDbo.InsertPost(testPost); err != nil {
 		t.Logf("error not expected when adding post: %s", err)
 		t.Fail()
 	}
 	teardownTest(t)
 }
 
-/* Tests that the AddPost controller behaves as expected. Ensures that the SQL
+/* Tests that the InsertPost controller behaves as expected. Ensures that the SQL
 driver correctly processes a failed entry */
-func TestAddPostFailure(t *testing.T) {
+func TestInsertPostFailure(t *testing.T) {
 	setupTest(t)
 
 	// Mocking db operations with test post
@@ -192,7 +192,7 @@ func TestAddPostFailure(t *testing.T) {
 	mock.ExpectRollback()
 
 	// Adding test post to mock database
-	if err = testDbo.AddPost(testPost); err == nil {
+	if err = testDbo.InsertPost(testPost); err == nil {
 		t.Logf("was expecting error when adding post: %s", err)
 	}
 	teardownTest(t)
