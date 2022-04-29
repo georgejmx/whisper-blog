@@ -3,6 +3,7 @@ package routes
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 
 	d "github.com/georgejmx/whisper-blog/controller"
 	x "github.com/georgejmx/whisper-blog/security"
@@ -21,7 +22,7 @@ var dbo tp.ControllerTemplate
 func SetupDatabase() {
 	dbo = &d.DbController{}
 	if err := dbo.Init(); err != nil {
-		panic("unable to initialise database")
+		log.Fatal("unable to initialise database")
 	}
 }
 
@@ -151,12 +152,15 @@ func AddReaction(c *gin.Context) {
 	// Sending success response
 	c.JSON(201, gin.H{
 		"message": "reaction successful",
-		"reply":   w.GenerateDescriptor(1349),
+		"data":    w.GenerateDescriptor(1349),
 		"marker":  1,
 	})
 }
 
-// Sends a HTTP failure response
+/* Allowing test database to be cleared by integration tests */
+func Clear() bool { return dbo.Clear() }
+
+/* Sends a HTTP failure response */
 func sendFailure(context *gin.Context, msg string) {
 	context.JSON(400, gin.H{
 		"message": msg,

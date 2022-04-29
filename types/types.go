@@ -24,6 +24,13 @@ type Reaction struct {
 	GravitasHash string `json:"hash,omitempty"`
 }
 
+// Represents a JSON response
+type Response struct {
+	Message string `json:"message"`
+	Marker  int    `json:"marker"`
+	Data    string `json:"token"`
+}
+
 // A template for an object that performs database interactions
 type ControllerTemplate interface {
 	Init() error
@@ -38,4 +45,5 @@ type ControllerTemplate interface {
 	InsertPost(post Post) error
 	InsertReaction(reaction Reaction) error
 	InsertHash(hash string) error
+	Clear() bool
 }

@@ -2,6 +2,7 @@ package controller
 
 import (
 	"database/sql"
+	"os"
 	"time"
 
 	tp "github.com/georgejmx/whisper-blog/types"
@@ -20,10 +21,13 @@ func (dbo *DbController) Init() error {
 	var err error = nil
 
 	// Open database connection
-	dbo.db, err = sql.Open("sqlite3", "./data/blog_test.db")
+	dbo.db, err = sql.Open("sqlite3", os.Getenv("DB_FILEPATH"))
 	if err != nil {
 		return err
 	}
+	dbo.db.SetConnMaxLifetime(time.Minute * 2)
+	dbo.db.SetMaxOpenConns(10)
+	dbo.db.SetMaxIdleConns(10)
 
 	// Configure database tables correctly
 	query := `create table if not exists Post (
@@ -287,4 +291,17 @@ func (dbo *DbController) InsertHash(hash string) error {
 		return err
 	}
 	return tx.Commit()
+}
+
+/* Clears db, for use in integration tests */
+func (dbo *DbController) Clear() bool {
+	queries := [3]string{`drop table Passcode`, `drop table Reaction`,
+		`drop table Post`}
+	for _, query := range queries {
+		if _, err := dbo.db.Exec(query); err != nil {
+			return false
+		}
+	}
+	dbo.db.Close()
+	return true
 }

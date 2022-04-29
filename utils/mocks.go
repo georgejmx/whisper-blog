@@ -111,6 +111,9 @@ func (mc *MockController) SelectAnonReactionCount(postId int) (int, error) {
 	}
 }
 
+// Mock method implementation
+func (mc *MockController) Clear() bool { return true }
+
 /* Generates a mock time, which is just over 1 week ago */
 func generateMockTime() time.Time {
 	hoursAgo := (-7 * 24) - 1

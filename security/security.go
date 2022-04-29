@@ -7,6 +7,8 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"errors"
+	"os"
+	"strconv"
 
 	tp "github.com/georgejmx/whisper-blog/types"
 	u "github.com/georgejmx/whisper-blog/utils"
@@ -77,6 +79,7 @@ func ValidateReactionHash(
 /* Sets the new randomly generated hash by inserting into the database. Returns
 A string which is the new raw text symmetrically encrypted */
 func SetHashAndRetrieveCipher(dbo tp.ControllerTemplate) (string, error) {
+	spliceInd, _ := strconv.ParseInt(os.Getenv("AES_SPLICE_INDEX"), 10, 64)
 	oldHash, err := dbo.SelectLatestHash()
 	if err != nil {
 		return "fail", err
@@ -89,14 +92,14 @@ func SetHashAndRetrieveCipher(dbo tp.ControllerTemplate) (string, error) {
 
 	// Initialising cipher with the old hash
 	bPlaintext := pkcs5Padding([]byte(rawPasscode), aes.BlockSize, 12)
-	block, err := aes.NewCipher([]byte(oldHash[28:60]))
+	block, err := aes.NewCipher([]byte(oldHash[spliceInd : spliceInd+32]))
 	if err != nil {
 		return "fail", err
 	}
 
 	// Encrypting the raw passcode for response to client
 	ciphertext := make([]byte, len(bPlaintext))
-	mode := cipher.NewCBCEncrypter(block, []byte("snooping6is9bad0"))
+	mode := cipher.NewCBCEncrypter(block, []byte(os.Getenv("AES_IV")))
 	mode.CryptBlocks(ciphertext, bPlaintext)
 	return hex.EncodeToString(ciphertext), nil
 }
