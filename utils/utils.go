@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"bytes"
 	"math/rand"
 	"strings"
 	"time"
@@ -63,4 +64,17 @@ func CheckDescriptor(descriptor, descriptors string) bool {
 		return true
 	}
 	return false
+}
+
+/* Boilerplate padding function */
+func Pkcs5Padding(ciphertext []byte, blockSize int, after int) []byte {
+	padding := (blockSize - len(ciphertext)%blockSize)
+	padtext := bytes.Repeat([]byte{byte(padding)}, padding)
+	return append(ciphertext, padtext...)
+}
+
+/* Boilerplate trimming function */
+func Pkcs5Trimming(encrypt []byte) []byte {
+	padding := encrypt[len(encrypt)-1]
+	return encrypt[:len(encrypt)-int(padding)]
 }

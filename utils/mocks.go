@@ -40,6 +40,40 @@ var (
 		"GENESISccc87d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a0ba"}
 	InvalidMockHash = `INVALIDc884c7659a2feaa0c55ad015a3bf4f1b2b0b822cd1a
 		5d6c15b0f00a09`
+	TestPosts = [5]tp.Post{
+		{
+			Title:       "test genesis post",
+			Author:      "God",
+			Contents:    `In the beginning God created the heavens and earth`,
+			Tag:         0,
+			Descriptors: "please overwrite me",
+		},
+		{
+			Title:       "test first post",
+			Author:      "welcomebot",
+			Contents:    `Robots are cool`,
+			Tag:         7,
+			Descriptors: "please overwrite me",
+		},
+		{
+			Title:    "test second post",
+			Author:   "g yang",
+			Contents: `do not worry child`,
+			Tag:      4,
+		},
+		{
+			Title:    "test 3 post",
+			Author:   "welcomebot",
+			Contents: `#ethereum`,
+			Tag:      1,
+		},
+		{
+			Title:    "test 4 post",
+			Author:   "g yang",
+			Contents: `boris out`,
+			Tag:      6,
+		},
+	}
 )
 
 // Mock method implementation

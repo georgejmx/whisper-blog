@@ -28,7 +28,7 @@ type Reaction struct {
 type Response struct {
 	Message string `json:"message"`
 	Marker  int    `json:"marker"`
-	Data    string `json:"token"`
+	Data    string `json:"data"`
 }
 
 // A template for an object that performs database interactions

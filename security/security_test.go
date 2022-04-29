@@ -1,6 +1,7 @@
 package security
 
 import (
+	"os"
 	"testing"
 
 	mock "github.com/georgejmx/whisper-blog/utils"
@@ -38,6 +39,14 @@ func TestValidateHashFailure(t *testing.T) {
 	// Checks that an invalid hash returns false with correct error
 	isValid, err := ValidateHash(controller, mock.InvalidMockHash)
 	errMsg := err.Error()
+	if isValid || string(errMsg[0]) != "a" {
+		t.Log("validating invalid hash succeeded")
+		t.Fail()
+	}
+
+	// Checks that an emptyhash returns false with correct error
+	isValid, err = ValidateHash(controller, "")
+	errMsg = err.Error()
 	if isValid || string(errMsg[0]) != "a" {
 		t.Log("validating invalid hash succeeded")
 		t.Fail()
@@ -109,14 +118,29 @@ func TestValidateReactionHashFails(t *testing.T) {
 	}
 }
 
-/* Checks that storing and retrieving hashes behaves properly */
+/* Checks that storing and retrieving hashes behaves properly for both genesis
+hash and also future posts*/
 func TestSetHashAndRetrieveCipher(t *testing.T) {
+	// Ensuring that required environment variables are set for tests
+	os.Setenv("AES_SPLICE_INDEX", "28")
+	os.Setenv("AES_IV", "snooping6is9bad0")
+
 	controller := &mock.MockController{}
-	ciphercode, err := SetHashAndRetrieveCipher(controller)
+	ciphercode, err := SetHashAndRetrieveCipher(controller, false)
 	if err != nil {
 		t.Logf("set hash function has thrown an error: %s", err)
 		t.Fail()
-	} else if len(ciphercode) != 32 {
+	} else if len(ciphercode) != 32 || len(ciphercode) == 0 {
+		t.Logf("incorrect length cipher: %s", ciphercode)
+		t.Fail()
+	}
+
+	// Genesis post case
+	ciphercode, err = SetHashAndRetrieveCipher(controller, true)
+	if err != nil {
+		t.Logf("set hash function has thrown an error at genesis: %s", err)
+		t.Fail()
+	} else if len(ciphercode) != 32 || ciphercode == "" {
 		t.Logf("incorrect length cipher: %s", ciphercode)
 		t.Fail()
 	}

@@ -1,7 +1,6 @@
 package security
 
 import (
-	"bytes"
 	"crypto/aes"
 	"crypto/cipher"
 	"crypto/sha256"
@@ -78,23 +77,33 @@ func ValidateReactionHash(
 
 /* Sets the new randomly generated hash by inserting into the database. Returns
 A string which is the new raw text symmetrically encrypted */
-func SetHashAndRetrieveCipher(dbo tp.ControllerTemplate) (string, error) {
+func SetHashAndRetrieveCipher(
+	dbo tp.ControllerTemplate, isGenesis bool) (string, error) {
+	var (
+		oldHash string
+		err     error
+	)
 	spliceInd, _ := strconv.ParseInt(os.Getenv("AES_SPLICE_INDEX"), 10, 64)
-	oldHash, err := dbo.SelectLatestHash()
-	if err != nil {
-		return "fail", err
+
+	// If genesis use hash('genesis') else use the previous hash
+	if isGenesis {
+		oldHash = RawToHash("gen6si9")
+	} else {
+		oldHash, err = dbo.SelectLatestHash()
+		if err != nil {
+			return "", err
+		}
 	}
 
 	// Generating passcode and hash
 	rawPasscode := u.GenerateRawPasscode()
-	hashBytes := sha256.Sum256([]byte(rawPasscode))
-	dbo.InsertHash(hex.EncodeToString(hashBytes[:]))
+	dbo.InsertHash(RawToHash(rawPasscode))
 
 	// Initialising cipher with the old hash
-	bPlaintext := pkcs5Padding([]byte(rawPasscode), aes.BlockSize, 12)
+	bPlaintext := u.Pkcs5Padding([]byte(rawPasscode), aes.BlockSize, 12)
 	block, err := aes.NewCipher([]byte(oldHash[spliceInd : spliceInd+32]))
 	if err != nil {
-		return "fail", err
+		return "", err
 	}
 
 	// Encrypting the raw passcode for response to client
@@ -104,11 +113,10 @@ func SetHashAndRetrieveCipher(dbo tp.ControllerTemplate) (string, error) {
 	return hex.EncodeToString(ciphertext), nil
 }
 
-/* Boilerplate padding function */
-func pkcs5Padding(ciphertext []byte, blockSize int, after int) []byte {
-	padding := (blockSize - len(ciphertext)%blockSize)
-	padtext := bytes.Repeat([]byte{byte(padding)}, padding)
-	return append(ciphertext, padtext...)
+/* INPUT: passcode string, OUTPUT: hex hash bytes */
+func RawToHash(raw string) string {
+	hashBytes := sha256.Sum256([]byte(raw))
+	return hex.EncodeToString(hashBytes[:])
 }
 
 /* Finds if the provided hash is a candidate, and if so the index */

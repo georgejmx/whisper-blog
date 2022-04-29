@@ -53,8 +53,9 @@ func GetChain(c *gin.Context) {
 /* Adds a Post contained in the request body to database, subject to
 validation */
 func AddPost(c *gin.Context) {
-	// Parsing request body
 	var post tp.Post
+
+	// Parsing request body
 	body, err := c.GetRawData()
 	err2 := json.Unmarshal(body, &post)
 	if err != nil || err2 != nil {
@@ -62,14 +63,25 @@ func AddPost(c *gin.Context) {
 		return
 	}
 
-	// Performing hash validation
-	isValidated, err := x.ValidateHash(dbo, post.Hash)
+	// If this is the genesis post, can skip hash validation
+	isGenesis, err := checkForGenesis()
+	marker := 2
 	if err != nil {
-		sendFailure(c, "unable to perform passcode validation")
+		sendFailure(c, "error when determing if genesis post")
 		return
-	} else if !isValidated {
-		sendFailure(c, "passcode validation failed")
-		return
+	}
+
+	// Performing hash validation
+	if !isGenesis {
+		marker = 1
+		isValidated, err := x.ValidateHash(dbo, post.Hash)
+		if err != nil {
+			sendFailure(c, "unable to perform passcode validation")
+			return
+		} else if !isValidated {
+			sendFailure(c, "passcode validation failed")
+			return
+		}
 	}
 
 	// Generating post descriptors then performing db insert of post
@@ -83,7 +95,7 @@ func AddPost(c *gin.Context) {
 	}
 
 	// Inserting new passcode and getting cipher
-	cipher, err := x.SetHashAndRetrieveCipher(dbo)
+	cipher, err := x.SetHashAndRetrieveCipher(dbo, isGenesis)
 	if err != nil {
 		sendFailure(c, "error when setting new passcode and/or getting cipher")
 		return
@@ -93,7 +105,7 @@ func AddPost(c *gin.Context) {
 	c.JSON(201, gin.H{
 		"message": "post successful",
 		"data":    cipher,
-		"marker":  1,
+		"marker":  marker,
 	})
 }
 
@@ -130,7 +142,7 @@ func AddReaction(c *gin.Context) {
 	}
 	reaction.Gravitas = gravitas
 
-	// If valid hash provided proceed
+	// If valid hash provided proceed without calling this block
 	if !isValidHash {
 		// Proceed to adding an anonymous hash if following conditions skip
 		count, err := dbo.SelectAnonReactionCount(reaction.PostId)
@@ -144,6 +156,7 @@ func AddReaction(c *gin.Context) {
 
 	}
 
+	// Finally adding reaction with the correct gravitas
 	if err := dbo.InsertReaction(reaction); err != nil {
 		sendFailure(c, "error when performing db insert")
 		return
@@ -159,6 +172,16 @@ func AddReaction(c *gin.Context) {
 
 /* Allowing test database to be cleared by integration tests */
 func Clear() bool { return dbo.Clear() }
+
+/* Determining if this is the genesis post */
+func checkForGenesis() (bool, error) {
+	// Selecting the existing chain
+	posts, err := dbo.SelectPosts()
+	if len(posts) == 0 {
+		return true, err
+	}
+	return false, err
+}
 
 /* Sends a HTTP failure response */
 func sendFailure(context *gin.Context, msg string) {
