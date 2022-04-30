@@ -58,7 +58,7 @@ func AddPost(c *gin.Context) {
 	// Parsing request body
 	body, err := c.GetRawData()
 	err2 := json.Unmarshal(body, &post)
-	if err != nil || err2 != nil {
+	if err != nil || err2 != nil || len(post.Author) > 10 {
 		sendFailure(c, "invalid request body")
 		return
 	}
@@ -75,13 +75,15 @@ func AddPost(c *gin.Context) {
 	if !isGenesis {
 		marker = 1
 		isValidated, err := x.ValidateHash(dbo, post.Hash)
-		if err != nil {
+		if err != nil || post.Tag == 0 {
 			sendFailure(c, "unable to perform passcode validation")
 			return
 		} else if !isValidated {
 			sendFailure(c, "passcode validation failed")
 			return
 		}
+	} else {
+		post.Tag = 0
 	}
 
 	// Generating post descriptors then performing db insert of post

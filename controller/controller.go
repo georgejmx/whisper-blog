@@ -2,6 +2,7 @@ package controller
 
 import (
 	"database/sql"
+	"fmt"
 	"os"
 	"time"
 
@@ -149,6 +150,7 @@ func (dbo *DbController) InsertPost(post tp.Post) error {
 	_, err := tx.Exec(`insert into Post (title, author, contents, descriptors, 
 		tag) values (?, ?, ?, ?, ?)`,
 		post.Title, post.Author, post.Contents, post.Descriptors, post.Tag)
+	fmt.Printf("author: %s\n", post.Author)
 	if err != nil {
 		tx.Rollback()
 		return err

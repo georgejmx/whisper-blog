@@ -37,7 +37,7 @@ func TestValidateHashFailure(t *testing.T) {
 	controller := &mock.MockController{}
 
 	// Checks that an invalid hash returns false with correct error
-	isValid, err := ValidateHash(controller, mock.InvalidMockHash)
+	isValid, err := ValidateHash(controller, mock.InvalidMockHashes[0])
 	errMsg := err.Error()
 	if isValid || string(errMsg[0]) != "a" {
 		t.Log("validating invalid hash succeeded")

@@ -21,8 +21,12 @@ import (
 )
 
 var (
-	testServer        *httptest.Server
-	testPostReqBodies = u.TestPosts
+	testServer               *httptest.Server
+	testPostReqBodies        = u.TestPosts
+	testInvalidPostReqBodies = u.TestInvalidPosts
+	respJson                 tp.Response
+	passHashes               = []string{x.RawToHash("gen6si9")}
+	invalidHashes            = u.InvalidMockHashes
 )
 
 /* Integration tests entry point */
@@ -48,15 +52,116 @@ func TestProcess(t *testing.T) {
 	}
 }
 
-/* Tests that the AddPost route behaves properly*/
+/* Tests that the AddPost route behaves properly */
 func TestAddPostSuccess(t *testing.T) {
-	var (
-		respJson   tp.Response
-		passHashes = []string{x.RawToHash("gen6si9")}
-	)
+	// add genesis post if not done already
+	if len(passHashes) == 1 {
+		addGenesisPost(t)
+	}
 
-	/*** ADDING A GENESIS POST ***/
+	// adding 3 valid posts in succession
+	i := 1
+	for i < 4 {
+		// Making a post with a valid request body
+		testPostReqBodies[i].Hash = passHashes[len(passHashes)-1]
+		jsonBody, _ := json.Marshal(testPostReqBodies[i])
+		resp, err := http.Post(
+			fmt.Sprintf("%s/data/post", testServer.URL),
+			"application/json", bytes.NewBuffer(jsonBody))
+		if err != nil {
+			t.Fatalf("unable to make post with index %d", i)
+		}
 
+		// Checking for a valid response
+		respData, _ := ioutil.ReadAll(resp.Body)
+		json.Unmarshal(respData, &respJson)
+		if respJson.Marker != 1 || len(respJson.Data) != 32 {
+			t.Logf("did not get expected response from %dth post", i)
+			t.Logf("marker: %d, data: %s\n", respJson.Marker, respJson.Data)
+			t.Log(respJson.Message)
+			t.Fatal()
+		}
+
+		// Retreiving passcode, adding its hash to our hash list
+		passcode, _ := decryptCipher(
+			passHashes[len(passHashes)-1], respJson.Data)
+		if len(passcode) != 12 {
+			t.Logf("error: %v, passcode: %s", err.Error(), passcode)
+			t.Fail()
+		}
+		passHashes = append(passHashes, x.RawToHash(passcode))
+		i++
+	}
+}
+
+/* Test that AddPost fails to add a post when criteria are not met */
+func TestAddPostFailure(t *testing.T) {
+	// add genesis post if not done already
+	if len(passHashes) == 1 {
+		addGenesisPost(t)
+	}
+
+	// Adding 3 invalid posts in succession
+	i := 0
+	for i < 3 {
+		// Making post with invalid request body
+		testInvalidPostReqBodies[i].Hash = passHashes[len(passHashes)-1]
+		jsonBody, _ := json.Marshal(testInvalidPostReqBodies[i])
+		resp, err := http.Post(
+			fmt.Sprintf("%s/data/post", testServer.URL),
+			"application/json", bytes.NewBuffer(jsonBody))
+		if err != nil {
+			t.Fatalf("unable to make invalid post with index %d", i)
+		}
+
+		// Checking for invalid response
+		respData, _ := ioutil.ReadAll(resp.Body)
+		json.Unmarshal(respData, &respJson)
+		if respJson.Marker != 0 {
+			t.Logf("did not get expected response from %dth invalid post", i)
+			t.Log(respJson.Message)
+			t.Fatal()
+		}
+		i++
+	}
+
+	// Attempting to add 3 valid posts, but with empty or invalid hash
+	i = 0
+	for i < 3 {
+		testPostReqBodies[5].Hash = invalidHashes[i]
+		jsonBody, _ := json.Marshal(testPostReqBodies[5])
+		resp, err := http.Post(
+			fmt.Sprintf("%s/data/post", testServer.URL),
+			"application/json", bytes.NewBuffer(jsonBody))
+		if err != nil {
+			t.Fatalf("unable to make invalid post with index %d", i+3)
+		}
+
+		// Checking for invalid response
+		respData, _ := ioutil.ReadAll(resp.Body)
+		json.Unmarshal(respData, &respJson)
+		if respJson.Marker != 0 {
+			t.Logf("did not get expected response from %dth invalid post", i+3)
+			t.Log(respJson.Message)
+			t.Fatal()
+		}
+		i++
+	}
+}
+
+/* Tests this utility function we need */
+func TestDecryptCipher(t *testing.T) {
+	prevHash := x.RawToHash("gen6si9")
+	responseData := "b9f4b247240b9bc78756d4d83150a99e"
+	passcode, err := decryptCipher(prevHash, responseData)
+	if err != nil || len(passcode) != 12 {
+		t.Logf("err: %v, passcode we got: %v\n", err, passcode)
+		t.Fail()
+	}
+}
+
+/* Adds a genesis post to chain. Is needed for all major tests */
+func addGenesisPost(t *testing.T) {
 	// Create json request body
 	jsonBody, err := json.Marshal(testPostReqBodies[0])
 	if err != nil {
@@ -90,50 +195,6 @@ func TestAddPostSuccess(t *testing.T) {
 		t.Fail()
 	}
 	passHashes = append(passHashes, x.RawToHash(passcode))
-
-	/*** ADDING 3 NON-GENESIS POSTS ***/
-	i := 1
-	for i < 4 {
-		// Making a post with a valid request body
-		testPostReqBodies[i].Hash = passHashes[1]
-		jsonBody, _ = json.Marshal(testPostReqBodies[i])
-		resp, err = http.Post(
-			fmt.Sprintf("%s/data/post", testServer.URL),
-			"application/json", bytes.NewBuffer(jsonBody))
-		if err != nil {
-			t.Fatalf("unable to make post with index %d", i)
-		}
-
-		// Checking for a valid response
-		respData, _ = ioutil.ReadAll(resp.Body)
-		json.Unmarshal(respData, &respJson)
-		if respJson.Marker != 1 || len(respJson.Data) != 32 {
-			t.Logf("did not get expected response from %dth post", i)
-			t.Logf("marker: %d, data: %s\n", respJson.Marker, respJson.Data)
-			t.Log(respJson.Message)
-			t.Fatal()
-		}
-
-		// Retreiving passcode, adding its hash to our hash list
-		passcode, _ = decryptCipher(passHashes[i], respJson.Data)
-		if len(passcode) != 12 {
-			t.Logf("error: %v, passcode: %s", err.Error(), passcode)
-			t.Fail()
-		}
-		passHashes = append(passHashes, x.RawToHash(passcode))
-		i++
-	}
-}
-
-/* Tests this utility function we need */
-func TestDecryptCipher(t *testing.T) {
-	prevHash := x.RawToHash("gen6si9")
-	responseData := "b9f4b247240b9bc78756d4d83150a99e"
-	passcode, err := decryptCipher(prevHash, responseData)
-	if err != nil || len(passcode) != 12 {
-		t.Logf("err: %v, passcode we got: %v\n", err, passcode)
-		t.Fail()
-	}
 }
 
 /* For use in integration tests, also a reference for the frontend js

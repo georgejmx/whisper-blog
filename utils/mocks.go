@@ -38,9 +38,11 @@ var (
 		"PENULTIMATE4c7d659a2feaa0c55ad015a3bf4f1b2b0b82215d6c15b0f00a0aa",
 		"THIRDccc84c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a0ba",
 		"GENESISccc87d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a0ba"}
-	InvalidMockHash = `INVALIDc884c7659a2feaa0c55ad015a3bf4f1b2b0b822cd1a
-		5d6c15b0f00a09`
-	TestPosts = [5]tp.Post{
+	InvalidMockHashes = [3]string{
+		"INVALIDc884c7659a2feaa0c55ad015a3bf4f1b2b0b822cd1a5d6c15b0f00a09",
+		"ffa88d265a882b0716c60227e9ddb5c6a09542ec9b40b875463908a760ed0d6f",
+		""}
+	TestPosts = [6]tp.Post{
 		{
 			Title:       "test genesis post",
 			Author:      "God",
@@ -72,6 +74,34 @@ var (
 			Author:   "g yang",
 			Contents: `boris out`,
 			Tag:      6,
+		},
+		{
+			Title:    "test 5 post",
+			Author:   "dommedman",
+			Contents: `orange pill`,
+			Tag:      2,
+		},
+	}
+	TestInvalidPosts = [3]tp.Post{
+		{
+			Title:       "test genesis post",
+			Author:      "God",
+			Contents:    `this post has a duplicate title`,
+			Tag:         0,
+			Descriptors: "please overwrite me",
+		},
+		{
+			Title:       "test other post 5",
+			Author:      "author length than 10 chars",
+			Contents:    `In the beginning God created the heavens and earth`,
+			Tag:         0,
+			Descriptors: "please overwrite me",
+		},
+		{
+			Title:       "test other post 6",
+			Author:      "anon",
+			Contents:    "this post has no tag",
+			Descriptors: "please overwrite me",
 		},
 	}
 )
