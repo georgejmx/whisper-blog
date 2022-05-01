@@ -47,7 +47,12 @@ func GetChain(c *gin.Context) {
 		stampedPosts = append(stampedPosts, val)
 	}
 
-	c.JSON(200, stampedPosts)
+	// Sending success response
+	c.JSON(200, gin.H{
+		"marker":     1,
+		"days_since": u.DaysSincePost(stampedPosts[len(stampedPosts)-1].Time),
+		"chain":      stampedPosts,
+	})
 }
 
 /* Adds a Post contained in the request body to database, subject to

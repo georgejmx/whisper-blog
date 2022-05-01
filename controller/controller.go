@@ -162,7 +162,7 @@ func (dbo *DbController) InsertPost(post tp.Post) error {
 /* Adds a new reaction to db */
 func (dbo *DbController) InsertReaction(reaction tp.Reaction) error {
 	tx, _ := dbo.db.Begin()
-	_, err := tx.Exec(`insert into Reaction (postId, descriptor, gravitas
+	_, err := tx.Exec(`insert into Reaction (postId, descriptor, gravitas,
 		gravitasHash) values (?, ?, ?, ?)`, reaction.PostId,
 		reaction.Descriptor, reaction.Gravitas, reaction.GravitasHash)
 	if err != nil {

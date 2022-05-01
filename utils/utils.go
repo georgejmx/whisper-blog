@@ -21,12 +21,17 @@ func GenerateRawPasscode() string {
 	return string(s)
 }
 
+/* Gets the days since last post as int */
+func DaysSincePost(lastPostTime time.Time) int {
+	prevTime := lastPostTime.Unix()
+	curTime := time.Now().Unix()
+	return int((curTime - prevTime) / DAYS_INT)
+}
+
 /* Validates if the provided hash index has the authority to make a post at
 this time */
 func ValidateHashTiming(lastPostTime time.Time, hashIndex int) bool {
-	prevTime := lastPostTime.Unix()
-	curTime := time.Now().Unix()
-	daysElapsed := (curTime - prevTime) / DAYS_INT
+	daysElapsed := DaysSincePost(lastPostTime)
 
 	// the next person can exclusively make a post for 5 days
 	if hashIndex <= 0 && daysElapsed < 5 {

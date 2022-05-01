@@ -29,9 +29,9 @@ func setup(isProduction bool) *gin.Engine {
 	router := gin.Default()
 	router.GET("/data", r.GetChain)
 	router.POST("/data/post", r.AddPost)
-	router.POST("/data/reaction", r.AddReaction)
+	router.POST("/data/react", r.AddReaction)
 
-	// Serving frontend at root path, then running
+	// Serving frontend at root path, then returning the gin Engine to run
 	router.GET("/", gin.WrapH(
 		http.FileServer(http.FS(os.DirFS("client/dist")))))
 	return router

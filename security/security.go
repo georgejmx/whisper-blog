@@ -43,7 +43,7 @@ what level of gravitas the reaction will have */
 func ValidateReactionHash(
 	dbo tp.ControllerTemplate, hash string, postId int) (bool, int, error) {
 
-	// Checking for a null hash
+	// Checking for a null hash, to prevent validation when < 5 post made
 	if len(hash) < 64 {
 		return false, 2, nil
 	}

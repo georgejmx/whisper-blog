@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"os"
+	"strings"
 	"testing"
 
 	r "github.com/georgejmx/whisper-blog/routes"
@@ -17,11 +18,23 @@ import (
 	u "github.com/georgejmx/whisper-blog/utils"
 )
 
+type PostResponse struct {
+	Message string `json:"message"`
+	Marker  int    `json:"marker"`
+	Data    string `json:"data"`
+}
+
+type GetResponse struct {
+	Marker    int       `json:"marker"`
+	DaysSince int       `json:"days_since"`
+	Chain     []tp.Post `json:"chain"`
+}
+
 var (
 	testServer               *httptest.Server
 	testPostReqBodies        = u.TestPosts
 	testInvalidPostReqBodies = u.TestInvalidPosts
-	respJson                 tp.Response
+	respJson                 PostResponse
 	passHashes               = []string{x.RawToHash("gen6si9")}
 	invalidHashes            = u.InvalidMockHashes
 )
@@ -146,11 +159,75 @@ func TestAddPostFailure(t *testing.T) {
 	}
 }
 
+/* Checks that 6 anonymous reactions can be placed but not 7 on latest post.
+In the process checks that getting the chain works as expected */
 func TestAddAnonReaction(t *testing.T) {
-	if len(passHashes) < 4 {
-		TestAddPostSuccess(t)
+	var chainResp GetResponse
+	if len(passHashes) == 1 {
+		addGenesisPost(t)
 	}
 
+	// Getting the chain, needed to find correct descriptors
+	resp, err := http.Get(fmt.Sprintf("%s/data", testServer.URL))
+	if err != nil {
+		t.Fatal("unable to get chain")
+	}
+	respData, _ := ioutil.ReadAll(resp.Body)
+	json.Unmarshal(respData, &chainResp)
+	if chainResp.Marker != 1 || chainResp.DaysSince != 0 {
+		t.Fatal("unable to get correct chain format from database")
+	}
+
+	// Getting an array of descriptors that could be valid reactions
+	latestPost := chainResp.Chain[0]
+	latestPostId := latestPost.Id
+	descriptors := strings.Split(latestPost.Descriptors, ";")
+
+	// Expecting 6 successes, then a failure. Validates behaviour
+	i := 0
+	for i < 6 {
+		addReaction(true, t, latestPostId, descriptors[i], "")
+		i++
+	}
+	addReaction(false, t, latestPostId, descriptors[9], "")
+}
+
+/* Adds a test reaction */
+func addReaction(
+	isValid bool, t *testing.T, postId int, descriptor, hash string) {
+	reaction := tp.Reaction{PostId: postId, Descriptor: descriptor}
+	if hash != "" {
+		reaction.GravitasHash = hash
+	}
+	body, _ := json.Marshal(reaction)
+	resp, err := http.Post(fmt.Sprintf("%s/data/react", testServer.URL),
+		"application/json", bytes.NewBuffer(body))
+	if err != nil {
+		t.Log("unable to make reaction")
+		t.Fail()
+	}
+
+	// Parse response into type, checking we got success
+	respData, err := ioutil.ReadAll(resp.Body)
+	err2 := json.Unmarshal(respData, &respJson)
+	if err != nil || err2 != nil {
+		t.Fatal("unable to parse response json into correct type")
+	}
+
+	// If was valid reaction, fail if response body indicates failure
+	if isValid {
+		if respJson.Marker != 1 || len(respJson.Data) == 0 {
+			t.Log("seemingly valid reaction produced failure response")
+			t.Log(respJson.Message)
+			t.Fail()
+		}
+	} else {
+		if respJson.Marker != 0 {
+			t.Log("seemingly invalid reaction produced success response")
+			t.Log(respJson.Message)
+			t.Fail()
+		}
+	}
 }
 
 /* Adds a genesis post to chain. Is needed for all major tests */
