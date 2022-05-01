@@ -77,22 +77,13 @@ func ValidateReactionHash(
 
 /* Sets the new randomly generated hash by inserting into the database. Returns
 A string which is the new raw text symmetrically encrypted */
-func SetHashAndRetrieveCipher(
-	dbo tp.ControllerTemplate, isGenesis bool) (string, error) {
-	var (
-		oldHash string
-		err     error
-	)
+func SetHashAndRetrieveCipher(dbo tp.ControllerTemplate,
+	isGenesis bool, prevHash string) (string, error) {
 	spliceInd, _ := strconv.ParseInt(os.Getenv("AES_SPLICE_INDEX"), 10, 64)
 
 	// If genesis use hash('genesis') else use the previous hash
 	if isGenesis {
-		oldHash = RawToHash("gen6si9")
-	} else {
-		oldHash, err = dbo.SelectLatestHash()
-		if err != nil {
-			return "", err
-		}
+		prevHash = RawToHash("gen6si9")
 	}
 
 	// Generating passcode and hash
@@ -101,7 +92,7 @@ func SetHashAndRetrieveCipher(
 
 	// Initialising cipher with the old hash
 	bPlaintext := u.Pkcs5Padding([]byte(rawPasscode), aes.BlockSize, 12)
-	block, err := aes.NewCipher([]byte(oldHash[spliceInd : spliceInd+32]))
+	block, err := aes.NewCipher([]byte(prevHash[spliceInd : spliceInd+32]))
 	if err != nil {
 		return "", err
 	}
@@ -127,4 +118,16 @@ func findHashIndex(providedHash string, candidates [5]string) int {
 		}
 	}
 	return -1
+}
+
+/* For use in integration tests, also a reference for the frontend js
+implementation */
+func DecryptCipher(prevHash, cipherStr string) (string, error) {
+	cipherBytes, _ := hex.DecodeString(cipherStr)
+	block, err := aes.NewCipher([]byte(prevHash[28:60]))
+	output := make([]byte, len(cipherBytes))
+	mode := cipher.NewCBCDecrypter(block, []byte("snooping6is9bad0"))
+	mode.CryptBlocks(output, cipherBytes)
+	output = u.Pkcs5Trimming(output)
+	return string(output), err
 }

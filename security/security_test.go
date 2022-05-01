@@ -126,7 +126,8 @@ func TestSetHashAndRetrieveCipher(t *testing.T) {
 	os.Setenv("AES_IV", "snooping6is9bad0")
 
 	controller := &mock.MockController{}
-	ciphercode, err := SetHashAndRetrieveCipher(controller, false)
+	ciphercode, err := SetHashAndRetrieveCipher(
+		controller, false, mock.MockHashes[0])
 	if err != nil {
 		t.Logf("set hash function has thrown an error: %s", err)
 		t.Fail()
@@ -135,13 +136,31 @@ func TestSetHashAndRetrieveCipher(t *testing.T) {
 		t.Fail()
 	}
 
+	passcode, err := DecryptCipher(mock.MockHashes[0], ciphercode)
+	if err != nil {
+		t.Logf("decrypting cipher threw an error: %s", err)
+		t.Fail()
+	} else if len(passcode) != 12 || len(passcode) == 0 {
+		t.Logf("incorrect passcode: %s", passcode)
+		t.Fail()
+	}
+
 	// Genesis post case
-	ciphercode, err = SetHashAndRetrieveCipher(controller, true)
+	ciphercode, err = SetHashAndRetrieveCipher(controller, true, "")
 	if err != nil {
 		t.Logf("set hash function has thrown an error at genesis: %s", err)
 		t.Fail()
 	} else if len(ciphercode) != 32 || ciphercode == "" {
 		t.Logf("incorrect length cipher: %s", ciphercode)
+		t.Fail()
+	}
+
+	passcode, err = DecryptCipher(RawToHash("gen6si9"), ciphercode)
+	if err != nil {
+		t.Logf("decrypting cipher threw an error: %s", err)
+		t.Fail()
+	} else if len(passcode) != 12 || len(passcode) == 0 {
+		t.Logf("incorrect passcode: %s", passcode)
 		t.Fail()
 	}
 }

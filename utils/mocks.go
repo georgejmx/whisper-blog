@@ -127,7 +127,8 @@ func (mc *MockController) SelectPosts() ([]tp.Post, error) {
 }
 
 // Mock method implementation
-func (mc *MockController) SelectPostReactions(postId int) ([]tp.Reaction, error) {
+func (mc *MockController) SelectPostReactions(
+	postId int) ([]tp.Reaction, error) {
 	return []tp.Reaction{MockReaction, MockReaction2}, nil
 }
 
@@ -139,11 +140,6 @@ func (mc *MockController) InsertHash(hash string) error {
 // Mock method implementation
 func (mc *MockController) SelectLatestTimestamp() (time.Time, error) {
 	return generateMockTime(), nil
-}
-
-// Mock method implementation
-func (mc *MockController) SelectLatestHash() (string, error) {
-	return MockHashes[0], nil
 }
 
 // Mock method implementation

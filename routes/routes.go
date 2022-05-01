@@ -53,7 +53,10 @@ func GetChain(c *gin.Context) {
 /* Adds a Post contained in the request body to database, subject to
 validation */
 func AddPost(c *gin.Context) {
-	var post tp.Post
+	var (
+		post   tp.Post
+		marker int
+	)
 
 	// Parsing request body
 	body, err := c.GetRawData()
@@ -65,14 +68,16 @@ func AddPost(c *gin.Context) {
 
 	// If this is the genesis post, can skip hash validation
 	isGenesis, err := checkForGenesis()
-	marker := 2
 	if err != nil {
 		sendFailure(c, "error when determing if genesis post")
 		return
 	}
 
-	// Performing hash validation
-	if !isGenesis {
+	// Need to perform hash validation if not genesis post
+	if isGenesis {
+		marker = 2
+		post.Tag = 0
+	} else {
 		marker = 1
 		isValidated, err := x.ValidateHash(dbo, post.Hash)
 		if err != nil || post.Tag == 0 {
@@ -82,8 +87,6 @@ func AddPost(c *gin.Context) {
 			sendFailure(c, "passcode validation failed")
 			return
 		}
-	} else {
-		post.Tag = 0
 	}
 
 	// Generating post descriptors then performing db insert of post
@@ -97,7 +100,7 @@ func AddPost(c *gin.Context) {
 	}
 
 	// Inserting new passcode and getting cipher
-	cipher, err := x.SetHashAndRetrieveCipher(dbo, isGenesis)
+	cipher, err := x.SetHashAndRetrieveCipher(dbo, isGenesis, post.Hash)
 	if err != nil {
 		sendFailure(c, "error when setting new passcode and/or getting cipher")
 		return

@@ -97,7 +97,8 @@ func (dbo *DbController) SelectPosts() ([]tp.Post, error) {
 
 /* Gets Reaction tuples from sqlite grouped by each descriptor. Returns a slice
 with an ascending list of such tuples ordered by their total gravitas */
-func (dbo *DbController) SelectPostReactions(postId int) ([]tp.Reaction, error) {
+func (dbo *DbController) SelectPostReactions(
+	postId int) ([]tp.Reaction, error) {
 	var reactions []tp.Reaction
 	tx, _ := dbo.db.Begin()
 
@@ -171,24 +172,6 @@ func (dbo *DbController) InsertReaction(reaction tp.Reaction) error {
 	return tx.Commit()
 }
 
-/* Selects the latest passcode hash from the database, for use in validation */
-func (dbo *DbController) SelectLatestHash() (string, error) {
-	var hash string
-
-	tx, _ := dbo.db.Begin()
-	row, err := tx.Query(`select hash from Passcode where id = 
-		(select max(id) from Passcode)`)
-	if err != nil {
-		tx.Rollback()
-		return hash, err
-	}
-	row.Next()
-	if err = row.Scan(&hash); err != nil {
-		return hash, err
-	}
-	return hash, tx.Commit()
-}
-
 /* Selects the 5 hashes that can be used for post or reaction validation. This
 is an array of the form [latest hash, second latest hash, third latest,
 fourth latest, genesis hash] */
@@ -227,7 +210,8 @@ func (dbo *DbController) SelectCandidateHashes() ([5]string, error) {
 }
 
 /* Selects the reaction hashes associated with a given post */
-func (dbo *DbController) SelectPostReactionHashes(postId int) ([5]string, error) {
+func (dbo *DbController) SelectPostReactionHashes(
+	postId int) ([5]string, error) {
 	reactionHashes := [5]string{"", "", "", "", ""}
 	tx, _ := dbo.db.Begin()
 

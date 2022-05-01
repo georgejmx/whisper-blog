@@ -81,30 +81,6 @@ func TestSelectPostsFailure(t *testing.T) {
 	testDbo.db.Close()
 }
 
-/* Tests that selecting a hash is a valid query and does whats expected */
-func TestSelectLatestHash(t *testing.T) {
-	setupTest(t)
-
-	// Needed for correct query matching of nested queries
-	testDbo.db, mock, err = sqlmock.New(
-		sqlmock.QueryMatcherOption(sqlmock.QueryMatcherEqual))
-
-	latestHash := `9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c
-		15b0f00a08`
-	rows := sqlmock.NewRows([]string{"hash"}).AddRow(latestHash)
-
-	mock.ExpectBegin()
-	mock.ExpectQuery(`select hash from Passcode where id = 
-	(select max(id) from Passcode)`).WillReturnRows(rows)
-	mock.ExpectCommit()
-
-	if _, err = testDbo.SelectLatestHash(); err != nil {
-		t.Logf("error not expected when selecting hash: %s", err)
-		t.Fail()
-	}
-	teardownTest(t)
-}
-
 /* Tests that selecting candidate hashes works as expected*/
 func TestSelectCandidateHashes(t *testing.T) {
 	setupTest(t)

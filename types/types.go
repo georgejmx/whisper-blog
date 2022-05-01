@@ -37,7 +37,6 @@ type ControllerTemplate interface {
 	SelectPosts() ([]Post, error)
 	SelectPostReactions(postId int) ([]Reaction, error)
 	SelectLatestTimestamp() (time.Time, error)
-	SelectLatestHash() (string, error)
 	SelectCandidateHashes() ([5]string, error)
 	SelectPostReactionHashes(postId int) ([5]string, error)
 	SelectDescriptors(postId int) (string, error)

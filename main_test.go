@@ -2,9 +2,6 @@ package main
 
 import (
 	"bytes"
-	"crypto/aes"
-	"crypto/cipher"
-	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -83,7 +80,7 @@ func TestAddPostSuccess(t *testing.T) {
 		}
 
 		// Retreiving passcode, adding its hash to our hash list
-		passcode, _ := decryptCipher(
+		passcode, _ := x.DecryptCipher(
 			passHashes[len(passHashes)-1], respJson.Data)
 		if len(passcode) != 12 {
 			t.Logf("error: %v, passcode: %s", err.Error(), passcode)
@@ -149,15 +146,11 @@ func TestAddPostFailure(t *testing.T) {
 	}
 }
 
-/* Tests this utility function we need */
-func TestDecryptCipher(t *testing.T) {
-	prevHash := x.RawToHash("gen6si9")
-	responseData := "b9f4b247240b9bc78756d4d83150a99e"
-	passcode, err := decryptCipher(prevHash, responseData)
-	if err != nil || len(passcode) != 12 {
-		t.Logf("err: %v, passcode we got: %v\n", err, passcode)
-		t.Fail()
+func TestAddAnonReaction(t *testing.T) {
+	if len(passHashes) < 4 {
+		TestAddPostSuccess(t)
 	}
+
 }
 
 /* Adds a genesis post to chain. Is needed for all major tests */
@@ -188,25 +181,13 @@ func addGenesisPost(t *testing.T) {
 	}
 
 	// Parsing a raw passcode from the response, storign this hash
-	passcode, err := decryptCipher(passHashes[0], respJson.Data)
+	passcode, err := x.DecryptCipher(passHashes[0], respJson.Data)
 	if err != nil || len(passcode) != 12 {
 		t.Logf("error decrypting cipher: %v, passcode length: %d",
 			err.Error(), len(passcode))
 		t.Fail()
 	}
 	passHashes = append(passHashes, x.RawToHash(passcode))
-}
-
-/* For use in integration tests, also a reference for the frontend js
-implementation */
-func decryptCipher(prevHash, cipherStr string) (string, error) {
-	cipherBytes, _ := hex.DecodeString(cipherStr)
-	block, err := aes.NewCipher([]byte(prevHash[28:60]))
-	output := make([]byte, len(cipherBytes))
-	mode := cipher.NewCBCDecrypter(block, []byte("snooping6is9bad0"))
-	mode.CryptBlocks(output, cipherBytes)
-	output = u.Pkcs5Trimming(output)
-	return string(output), err
 }
 
 /* Clearing db then closing server */
