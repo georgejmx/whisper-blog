@@ -16,3 +16,22 @@ func TestValidateHashTiming(t *testing.T) {
 		t.Fail()
 	}
 }
+
+/* Tests that a correct passcode is generated, that are not easily recreated
+using the current exact time */
+func TestGenerateRawPasscode(t *testing.T) {
+	passcodes := []string{"aaaaaaaaaaa!"}
+	i := 0
+	for i < 5 {
+		passcode := GenerateRawPasscode()
+		if len(passcode) != 12 {
+			t.Logf("incorrect passcode parsed: %s\n", passcode)
+			t.Fail()
+		} else if passcodes[i] == passcode {
+			t.Logf("duplicate passcodes found: %s\n", passcode)
+			t.Fail()
+		}
+		passcodes = append(passcodes, passcode)
+		i++
+	}
+}

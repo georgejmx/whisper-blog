@@ -42,7 +42,7 @@ var (
 		"INVALIDc884c7659a2feaa0c55ad015a3bf4f1b2b0b822cd1a5d6c15b0f00a09",
 		"ffa88d265a882b0716c60227e9ddb5c6a09542ec9b40b875463908a760ed0d6f",
 		""}
-	TestPosts = [6]tp.Post{
+	TestPosts = [7]tp.Post{
 		{
 			Title:       "test genesis post",
 			Author:      "God",
@@ -80,6 +80,12 @@ var (
 			Author:   "dommedman",
 			Contents: `orange pill`,
 			Tag:      2,
+		},
+		{
+			Title:    "test 6 post",
+			Author:   "shapiro",
+			Contents: "squeak, squeak",
+			Tag:      5,
 		},
 	}
 	TestInvalidPosts = [3]tp.Post{

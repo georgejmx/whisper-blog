@@ -2,21 +2,25 @@ package utils
 
 import (
 	"bytes"
-	"math/rand"
+	"crypto/rand"
+	"math/big"
+	"strconv"
 	"strings"
 	"time"
 )
 
 const DAYS_INT = 86400
 
-/* Generates a new plain-text passcode and hash pair to lead the chain */
+/* Generates a new plain-text to lead the chain, that is moderately secure
+in plaintext */
 func GenerateRawPasscode() string {
-	rand.Seed(time.Now().Unix())
 	var letters = []rune(
 		"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789")
 	s := make([]rune, 12)
 	for i := range s {
-		s[i] = letters[rand.Intn(len(letters))]
+		bigrand, _ := rand.Int(rand.Reader, big.NewInt(9999999999))
+		smallrand, _ := strconv.ParseInt(bigrand.Text(10), 10, 0)
+		s[i] = letters[smallrand%62]
 	}
 	return string(s)
 }

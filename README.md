@@ -7,5 +7,4 @@ Interactive blog, with a unique chain-like structure
 Clone the repo into your GOROOT. Run `go test ./...` to ensure your build is
 stable.
 
-Then simply execute the *wb* binary file to spin up the web server and serve
-frontend
+Execute `go run main.go` to spin up the site

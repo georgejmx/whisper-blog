@@ -69,9 +69,9 @@ func TestAddPostSuccess(t *testing.T) {
 		addGenesisPost(t)
 	}
 
-	// adding 3 valid posts in succession
+	// adding 4 valid posts in succession
 	i := 1
-	for i < 4 {
+	for i < 5 {
 		// Making a post with a valid request body
 		testPostReqBodies[i].Hash = passHashes[len(passHashes)-1]
 		jsonBody, _ := json.Marshal(testPostReqBodies[i])
@@ -139,7 +139,7 @@ func TestAddPostFailure(t *testing.T) {
 	i = 0
 	for i < 3 {
 		testPostReqBodies[5].Hash = invalidHashes[i]
-		jsonBody, _ := json.Marshal(testPostReqBodies[5])
+		jsonBody, _ := json.Marshal(testPostReqBodies[6])
 		resp, err := http.Post(
 			fmt.Sprintf("%s/data/post", testServer.URL),
 			"application/json", bytes.NewBuffer(jsonBody))
@@ -180,16 +180,60 @@ func TestAddAnonReaction(t *testing.T) {
 
 	// Getting an array of descriptors that could be valid reactions
 	latestPost := chainResp.Chain[0]
-	latestPostId := latestPost.Id
+	lastPostId := latestPost.Id
 	descriptors := strings.Split(latestPost.Descriptors, ";")
 
 	// Expecting 6 successes, then a failure. Validates behaviour
 	i := 0
 	for i < 6 {
-		addReaction(true, t, latestPostId, descriptors[i], "")
+		addReaction(true, t, lastPostId, descriptors[i], "")
 		i++
 	}
-	addReaction(false, t, latestPostId, descriptors[9], "")
+	addReaction(false, t, lastPostId, descriptors[9], "")
+
+	// Invalid hash should definitely fail
+	addReaction(false, t, lastPostId, descriptors[9], invalidHashes[0])
+}
+
+/* Checks that the previous 3 hashes on the chain can be used to send a
+single reaction independent of the anonymous ones */
+func TestAddSignedReaction(t *testing.T) {
+	var chainResp GetResponse
+	if len(passHashes) < 5 {
+		TestAddPostSuccess(t)
+	}
+
+	// Getting the chain, needed to find correct descriptors
+	resp, err := http.Get(fmt.Sprintf("%s/data", testServer.URL))
+	if err != nil {
+		t.Fatal("unable to get chain")
+	}
+	respData, _ := ioutil.ReadAll(resp.Body)
+	json.Unmarshal(respData, &chainResp)
+	if chainResp.Marker != 1 || chainResp.DaysSince != 0 {
+		t.Fatal("unable to get correct chain format from database")
+	}
+
+	// Getting an array of descriptors that could be valid reactions
+	latestPost := chainResp.Chain[0]
+	lastPostId := latestPost.Id
+	descriptors := strings.Split(latestPost.Descriptors, ";")
+	maxInd := len(passHashes) - 1
+
+	// Using the genesis hash should work once
+	addReaction(true, t, lastPostId, descriptors[9], passHashes[1])
+	addReaction(false, t, lastPostId, descriptors[9], passHashes[1])
+
+	// Previous and penultimate hash should work once
+	i := 1
+	for i < 3 {
+		addReaction(true, t, lastPostId, descriptors[9], passHashes[maxInd-i])
+		addReaction(false, t, lastPostId, descriptors[9], passHashes[maxInd-i])
+		i++
+	}
+
+	// Latest hash should fail
+	addReaction(false, t, lastPostId, descriptors[9], passHashes[maxInd])
 }
 
 /* Adds a test reaction */
