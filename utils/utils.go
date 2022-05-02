@@ -20,6 +20,7 @@ func GenerateRawPasscode() string {
 	for i := range s {
 		bigrand, _ := rand.Int(rand.Reader, big.NewInt(9999999999))
 		smallrand, _ := strconv.ParseInt(bigrand.Text(10), 10, 0)
+		smallrand += time.Now().UnixMilli()
 		s[i] = letters[smallrand%62]
 	}
 	return string(s)

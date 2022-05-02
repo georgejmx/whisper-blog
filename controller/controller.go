@@ -221,7 +221,7 @@ func (dbo *DbController) SelectPostReactionHashes(
 		return reactionHashes, err
 	}
 	i := 0
-	for rows.Next() && i < 4 {
+	for rows.Next() && i < 5 {
 		var reactionHash string
 		if err := rows.Scan(&reactionHash); err != nil {
 			return reactionHashes, err

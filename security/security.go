@@ -126,7 +126,7 @@ func DecryptCipher(prevHash, cipherStr string) (string, error) {
 	cipherBytes, _ := hex.DecodeString(cipherStr)
 	block, err := aes.NewCipher([]byte(prevHash[28:60]))
 	output := make([]byte, len(cipherBytes))
-	mode := cipher.NewCBCDecrypter(block, []byte("snooping6is9bad0"))
+	mode := cipher.NewCBCDecrypter(block, []byte(os.Getenv("AES_IV")))
 	mode.CryptBlocks(output, cipherBytes)
 	output = u.Pkcs5Trimming(output)
 	return string(output), err

@@ -31,12 +31,13 @@ type GetResponse struct {
 }
 
 var (
+	respJson                 PostResponse
 	testServer               *httptest.Server
 	testPostReqBodies        = u.TestPosts
 	testInvalidPostReqBodies = u.TestInvalidPosts
-	respJson                 PostResponse
 	passHashes               = []string{x.RawToHash("gen6si9")}
 	invalidHashes            = u.InvalidMockHashes
+	hasMaxAnonHash           = false
 )
 
 /* Integration tests entry point */
@@ -193,6 +194,8 @@ func TestAddAnonReaction(t *testing.T) {
 
 	// Invalid hash should definitely fail
 	addReaction(false, t, lastPostId, descriptors[9], invalidHashes[0])
+
+	hasMaxAnonHash = true
 }
 
 /* Checks that the previous 3 hashes on the chain can be used to send a
@@ -201,6 +204,8 @@ func TestAddSignedReaction(t *testing.T) {
 	var chainResp GetResponse
 	if len(passHashes) < 5 {
 		TestAddPostSuccess(t)
+	} else if !hasMaxAnonHash {
+		TestAddAnonReaction(t)
 	}
 
 	// Getting the chain, needed to find correct descriptors
@@ -226,7 +231,7 @@ func TestAddSignedReaction(t *testing.T) {
 
 	// Previous and penultimate hash should work once
 	i := 1
-	for i < 3 {
+	for i < 4 {
 		addReaction(true, t, lastPostId, descriptors[9], passHashes[maxInd-i])
 		addReaction(false, t, lastPostId, descriptors[9], passHashes[maxInd-i])
 		i++
