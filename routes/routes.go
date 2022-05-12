@@ -47,10 +47,18 @@ func GetChain(c *gin.Context) {
 		stampedPosts = append(stampedPosts, val)
 	}
 
+	// Calculating days since previous post
+	var daysSince int
+	if len(stampedPosts) == 0 {
+		daysSince = 0
+	} else {
+		daysSince = u.DaysSincePost(stampedPosts[len(stampedPosts)-1].Time)
+	}
+
 	// Sending success response
 	c.JSON(200, gin.H{
 		"marker":     1,
-		"days_since": u.DaysSincePost(stampedPosts[len(stampedPosts)-1].Time),
+		"days_since": daysSince,
 		"chain":      stampedPosts,
 	})
 }

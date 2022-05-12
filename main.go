@@ -5,9 +5,6 @@ LICENSE file. */
 package main
 
 import (
-	"net/http"
-	"os"
-
 	config "github.com/georgejmx/whisper-blog/config"
 	r "github.com/georgejmx/whisper-blog/routes"
 
@@ -31,8 +28,6 @@ func setup(isProduction bool) *gin.Engine {
 	router.POST("/data/post", r.AddPost)
 	router.POST("/data/react", r.AddReaction)
 
-	// Serving frontend at root path, then returning the gin Engine to run
-	router.GET("/", gin.WrapH(
-		http.FileServer(http.FS(os.DirFS("client/dist")))))
+	// Returning this router
 	return router
 }
