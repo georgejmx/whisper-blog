@@ -8,12 +8,13 @@ import (
 	config "github.com/georgejmx/whisper-blog/config"
 	r "github.com/georgejmx/whisper-blog/routes"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
 
 /* Program entry point when used in production */
 func main() {
-	setup(true).Run("localhost:8080")
+	setup(true).Run("localhost:8001")
 }
 
 /* Read production configuration and setup production server */
@@ -27,7 +28,10 @@ func setup(isProduction bool) *gin.Engine {
 	router.GET("/data", r.GetChain)
 	router.POST("/data/post", r.AddPost)
 	router.POST("/data/react", r.AddReaction)
-
-	// Returning this router
+	router.Use(cors.Default())
+	router.Static("/w", "./client/public")
+	router.GET("/", func(c *gin.Context) {
+		c.Redirect(301, "/w")
+	})
 	return router
 }

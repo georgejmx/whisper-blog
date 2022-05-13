@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+    <head>
+        <meta charset="utf-8">
+        <link rel="icon" href="./assets/favicon.ico">
+        <script src="https://cdn.tailwindcss.com"></script>
+        <title class="px-2">WhisperBlog</title>
+        <script src="main.js" defer></script>
+    </head>
+    <body>
+      <!-- HOME -->
+        <div class="bg-slate-900 text-center">
+            <h1 class="text-3xl font-bold underline text-white">WhisperBlog</h1>
+            <div class="mx-16 my-4 flex flex-wrap justify-center">
+              <p class="text-slate-300">Trace the digital Whispers to see what your friends are talking about.
+                Receiving the chain passcode brings great responsibility; stamp your mark
+                on the chain and guard it against malicious actors!</p>
+              <img class="h-auto rounded-lg my-2" src="./assets/whisper.jpg" />
+            </div>
+            <button class="inline-block px-6 py-2.5 bg-green-600 font-medium text-xs
+              leading-tight rounded shadow-md hover:bg-green-800 hover:shadow-lg
+              focus:bg-green-600 focus:shadow-lg focus:outline-none focus:ring-0
+              active:bg-green-700 active:shadow-lg transition duration-150 ease-in-out"
+              type="button" id="post-btn" data-bs-toggle="modal" data-bs-target="#post-modal">Add Post</button>
+            <div id="chainground">
+
+            </div>
+        </div>
+        <!-- POST MODAL -->
+        <div id="post-modal" class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto"
+          tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+          <div class="modal-dialog relative w-auto pointer-events-none">
+            <div
+              class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
+              <div
+                class="modal-header flex flex-shrink-0 items-center justify-between p-4 border-b border-gray-200 rounded-t-md">
+                <h5 class="text-xl font-medium leading-normal text-gray-800" id="exampleModalLabel">Modal title</h5>
+                <button type="button"
+                  class="btn-close box-content w-4 h-4 p-1 text-black border-none rounded-none opacity-50 focus:shadow-none focus:outline-none focus:opacity-100 hover:text-black hover:opacity-75 hover:no-underline"
+                  data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body relative p-4">
+                Modal body text goes here.
+              </div>
+              <div
+                class="modal-footer flex flex-shrink-0 flex-wrap items-center justify-end p-4 border-t border-gray-200 rounded-b-md">
+                <button type="button" class="px-6
+                  py-2.5
+                  bg-purple-600
+                  text-white
+                  font-medium
+                  text-xs
+                  leading-tight
+                  uppercase
+                  rounded
+                  shadow-md
+                  hover:bg-purple-700 hover:shadow-lg
+                  focus:bg-purple-700 focus:shadow-lg focus:outline-none focus:ring-0
+                  active:bg-purple-800 active:shadow-lg
+                  transition
+                  duration-150
+                  ease-in-out" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="px-6
+              py-2.5
+              bg-blue-600
+              text-white
+              font-medium
+              text-xs
+              leading-tight
+              uppercase
+              rounded
+              shadow-md
+              hover:bg-blue-700 hover:shadow-lg
+              focus:bg-blue-700 focus:shadow-lg focus:outline-none focus:ring-0
+              active:bg-blue-800 active:shadow-lg
+              transition
+              duration-150
+              ease-in-out
+              ml-1">Save changes</button>
+              </div>
+            </div>
+          </div>
+        </div>
+    </body>
+</html>

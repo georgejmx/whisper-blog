@@ -29,6 +29,8 @@ func SetupDatabase() {
 /* Gets the chain stored in backend. This inlcudes all posts and the top 3
 reactions for each post */
 func GetChain(c *gin.Context) {
+	attachHeaders(c)
+
 	// Selecting posts data
 	posts, err := dbo.SelectPosts()
 	if err != nil {
@@ -51,6 +53,7 @@ func GetChain(c *gin.Context) {
 	var daysSince int
 	if len(stampedPosts) == 0 {
 		daysSince = 0
+		stampedPosts = []tp.Post{}
 	} else {
 		daysSince = u.DaysSincePost(stampedPosts[len(stampedPosts)-1].Time)
 	}
@@ -199,6 +202,15 @@ func checkForGenesis() (bool, error) {
 		return true, err
 	}
 	return false, err
+}
+
+/* Attaches CORS headers to the current context */
+func attachHeaders(c *gin.Context) *gin.Context {
+	c.Header("Access-Control-Allow-Origin", "*")
+	c.Header("Access-Control-Allow-Credentials", "true")
+	c.Header("Access-Control-Allow-Headers", "Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, accept, origin, Cache-Control, X-Requested-With")
+	c.Header("Access-Control-Allow-Methods", "GET,POST,HEAD,OPTIONS")
+	return c
 }
 
 /* Sends a HTTP failure response */
