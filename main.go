@@ -14,7 +14,7 @@ import (
 
 /* Program entry point when used in production */
 func main() {
-	setup(true).Run("localhost:8001")
+	setup(true).Run("localhost:8000")
 }
 
 /* Read production configuration and setup production server */

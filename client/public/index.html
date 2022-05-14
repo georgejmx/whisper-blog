@@ -1,85 +1,100 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
-    <head>
-        <meta charset="utf-8">
-        <link rel="icon" href="./assets/favicon.ico">
-        <script src="https://cdn.tailwindcss.com"></script>
-        <title class="px-2">WhisperBlog</title>
-        <script src="main.js" defer></script>
-    </head>
-    <body>
-      <!-- HOME -->
-        <div class="bg-slate-900 text-center">
-            <h1 class="text-3xl font-bold underline text-white">WhisperBlog</h1>
-            <div class="mx-16 my-4 flex flex-wrap justify-center">
-              <p class="text-slate-300">Trace the digital Whispers to see what your friends are talking about.
-                Receiving the chain passcode brings great responsibility; stamp your mark
-                on the chain and guard it against malicious actors!</p>
-              <img class="h-auto rounded-lg my-2" src="./assets/whisper.jpg" />
-            </div>
-            <button class="inline-block px-6 py-2.5 bg-green-600 font-medium text-xs
-              leading-tight rounded shadow-md hover:bg-green-800 hover:shadow-lg
-              focus:bg-green-600 focus:shadow-lg focus:outline-none focus:ring-0
-              active:bg-green-700 active:shadow-lg transition duration-150 ease-in-out"
-              type="button" id="post-btn" data-bs-toggle="modal" data-bs-target="#post-modal">Add Post</button>
-            <div id="chainground">
+	<head>
+		<meta charset="utf-8">
+		<link rel="stylesheet" href="output.css"/>
+		<link rel="icon" href="./assets/favicon.ico">
+		<title>WhisperBlog</title>
+		<script src="main.js" defer></script>
+	</head>
+	<body class="bg-slate-900">
+		<!-- HOME -->
+		<div class="text-center pt-5">
+			<h1 class="text-3xl font-bold underline text-white">WhisperBlog</h1>
+			<div class="mx-16 my-4 flex flex-wrap justify-center">
+				<p class="text-slate-300">Trace the digital Whispers to see what
+					your friends are talking about. Receiving the chain passcode brings
+					great responsibility; stamp your mark on the chain and guard it
+					against malicious actors!</p>
+				<img class="h-auto rounded-lg my-2" src="./assets/whisper.jpg" />
+			</div>
+			<button onclick="modalHandler(true)" class="inline-block px-6 py-2.5
+				bg-green-600 font-medium text-xs leading-tight
+				rounded shadow-md hover:bg-green-800 hover:shadow-lg focus:bg-green-600 focus:shadow-lg
+				focus:outline-none focus:ring-0 active:bg-green-700 active:shadow-lg transition
+				duration-150 ease-in-out" type="button">
+				Add Post</button>
+			<div id="chainground"></div>
+		</div>
 
-            </div>
-        </div>
-        <!-- POST MODAL -->
-        <div id="post-modal" class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto"
-          tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-          <div class="modal-dialog relative w-auto pointer-events-none">
-            <div
-              class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
-              <div
-                class="modal-header flex flex-shrink-0 items-center justify-between p-4 border-b border-gray-200 rounded-t-md">
-                <h5 class="text-xl font-medium leading-normal text-gray-800" id="exampleModalLabel">Modal title</h5>
-                <button type="button"
-                  class="btn-close box-content w-4 h-4 p-1 text-black border-none rounded-none opacity-50 focus:shadow-none focus:outline-none focus:opacity-100 hover:text-black hover:opacity-75 hover:no-underline"
-                  data-bs-dismiss="modal" aria-label="Close"></button>
-              </div>
-              <div class="modal-body relative p-4">
-                Modal body text goes here.
-              </div>
-              <div
-                class="modal-footer flex flex-shrink-0 flex-wrap items-center justify-end p-4 border-t border-gray-200 rounded-b-md">
-                <button type="button" class="px-6
-                  py-2.5
-                  bg-purple-600
-                  text-white
-                  font-medium
-                  text-xs
-                  leading-tight
-                  uppercase
-                  rounded
-                  shadow-md
-                  hover:bg-purple-700 hover:shadow-lg
-                  focus:bg-purple-700 focus:shadow-lg focus:outline-none focus:ring-0
-                  active:bg-purple-800 active:shadow-lg
-                  transition
-                  duration-150
-                  ease-in-out" data-bs-dismiss="modal">Close</button>
-                <button type="button" class="px-6
-              py-2.5
-              bg-blue-600
-              text-white
-              font-medium
-              text-xs
-              leading-tight
-              uppercase
-              rounded
-              shadow-md
-              hover:bg-blue-700 hover:shadow-lg
-              focus:bg-blue-700 focus:shadow-lg focus:outline-none focus:ring-0
-              active:bg-blue-800 active:shadow-lg
-              transition
-              duration-150
-              ease-in-out
-              ml-1">Save changes</button>
-              </div>
-            </div>
-          </div>
-        </div>
-    </body>
+		<!-- ADD MODAL -->
+		<div class="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog" 
+			style="display:none;" aria-modal="true" id="modal">
+			<div class="flex items-end justify-center p-4 text-center md:items-center 
+				sm:block sm:p-0">
+				<div class="inline-block max-w-prose overflow-hidden text-left transition-all
+					transform bg-white rounded-lg 2xl:max-w-2xl xl:w-3/5">
+					<div class="relative py-8 px-15 md:px-10 rounded">
+						<h1 class="text-slate-900 font-xl font-bold mb-1 underline-offset-1">Add Post</h1>
+						<br>
+	
+						<label for="title" class="text-slate-900 text-sm font-bold leading-tight pt-2
+							tracking-normal">Title</label>
+						<input id="title" class="mb-3 mt-1 text-slate-900 focus:outline-none focus:border
+							focus:border-slate-700 font-normal w-full h-10 flex items-center pl-2 text-sm
+							border-gray-300 rounded border" placeholder="untitled" />
+	
+						<label for="contents" class="text-slate-900 text-sm font-bold leading-tight pt-3
+							tracking-normal">Contents</label>
+						<textarea id="contents" rows="75" cols="20" class="text-slate-900 focus:outline-none
+							focus:border mt-1 focus:border-slate-700 font-normal w-full h-10 flex 
+							items-center text-sm pl-2border-gray-300 rounded border"
+							style="min-height: 120px" placeholder="whisper in latin.."></textarea>
+						<br>
+
+						<label for="author" class="text-slate-900 text-sm font-bold leading-tight pt-3
+							tracking-normal">Author</label>
+						<input id="author" class="mb-3 mt-2 text-slate-900 focus:outline-none focus:border
+							focus:border-slate-700 font-normal w-full h-10 flex items-center pl-2 text-sm
+							border-gray-300 rounded border" placeholder="unnamed" />
+
+						<p class="text-slate-900 text-sm font-bold leading-tight pt-3 tracking-normal">Tag</p>
+						<div class="flex mb-3">
+							<div class="form-check form-check-inline">
+								<input class="form-check-input appearance-none rounded-full h-4 w-4 border
+									bg-white checked:bg-orange-900  focus:outline-none my-1 align-top bg-no-repeat
+									bg-center bg-contain float-left mr-2 cursor-pointer" type="radio" name="post-tag" 
+									id="radio1" checked>
+								<input class="form-check-input appearance-none rounded-full h-4 w-4 border
+									bg-white checked:bg-indigo-700  focus:outline-none my-1 align-top bg-no-repeat
+									bg-center bg-contain float-left mr-2 cursor-pointer" type="radio" name="post-tag" 
+									id="radio2">
+								<input class="form-check-input appearance-none rounded-full h-4 w-4 border
+									bg-white checked:bg-pink-700  focus:outline-none my-1 align-top bg-no-repeat
+									bg-center bg-contain float-left mr-2 cursor-pointer" type="radio" name="post-tag" 
+									id="radio3">
+							</div>
+						</div>
+
+						<label for="passcode" class="text-slate-900 text-sm font-bold leading-tight pt-3
+							tracking-normal">Passcode</label>
+						<input id="passcode" class="mb-3 mt-2 text-slate-900 focus:outline-none focus:border
+							focus:border-slate-700 font-normal w-full h-10 flex items-center pl-2 text-sm
+							border-gray-300 rounded border" placeholder="unknown" />
+	
+						<div class="flex items-center justify-evenly pt-4 w-full p-6">
+							<button class="focus:outline-none focus:ring-2 focus:ring-offset-2 bg-green-500
+								focus:ring-slate-700 transition duration-150 ease-in-out hover:bg-slate-600
+								rounded px-8 py-2 text-sm text-slate-900" id="post-btn">Express yourself</button>
+							<button class="focus:outline-none focus:ring-2 focus:ring-offset-2 pl-4
+								focus:ring-gray-400 ml-3 transition duration-150 text-slate-900
+								ease-in-out hover:border-gray-400 hover:bg-gray-300 border rounded px-8 py-2
+								text-sm bg-red-500" onclick="modalHandler()">Close</button>
+						</div>
+					</div>
+				</div>
+
+			</div>
+		</div>
+	</body>
 </html>
