@@ -65,11 +65,16 @@ postBtn.addEventListener('click', async event => {
         tag,
         hash
     }
+
+    // Communicating with server; attempting *addPost* then showing result
     addPost(postParams).then(resp => {
         if (resp.marker === 1) {
             const newCode = unlockRawPasscode(resp.data, hash)
             responseBox.textContent = 
                 `The new passcode is ${newCode}; ${resp.message}`
+
+            // Refreshing chain html
+            imprintChain()
         } else if (resp.marker === 2) {
             const newCode = unlockRawPasscode(
                 resp.data, CryptoJS.SHA256('gen6si9').toString())
