@@ -5,7 +5,10 @@
 		<link rel="stylesheet" href="output.css"/>
 		<link rel="icon" href="./assets/favicon.ico">
 		<title>WhisperBlog</title>
-		<script src="main.js" defer></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js" 
+			integrity="sha512-E8QSvWZ0eCLGk4km3hxSsNmGWbLtSCSUcewDQPQWZF6pEU8GlT8a5fF32wOl1i8ftdMhssTrF/OhyGWwonTcXA==" 
+			crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+		<script type="text/javascript" src="main.js" defer></script>
 	</head>
 	<body class="bg-slate-900">
 		<!-- HOME -->
@@ -19,11 +22,10 @@
 				<img class="h-auto rounded-lg my-2" src="./assets/whisper.jpg" />
 			</div>
 			<button onclick="modalHandler(true)" class="inline-block px-6 py-2.5
-				bg-green-600 font-medium text-xs leading-tight
-				rounded shadow-md hover:bg-green-800 hover:shadow-lg focus:bg-green-600 focus:shadow-lg
+				bg-green-600 font-medium text-xs leading-tight rounded shadow-md
+				hover:bg-green-800 hover:shadow-lg focus:bg-green-600 focus:shadow-lg 
 				focus:outline-none focus:ring-0 active:bg-green-700 active:shadow-lg transition
-				duration-150 ease-in-out" type="button">
-				Add Post</button>
+				duration-150 ease-in-out" type="button">Add Post</button>
 			<div id="chainground"></div>
 		</div>
 
@@ -35,61 +37,95 @@
 				<div class="inline-block max-w-prose overflow-hidden text-left transition-all
 					transform bg-white rounded-lg 2xl:max-w-2xl xl:w-3/5">
 					<div class="relative py-8 px-15 md:px-10 rounded">
-						<h1 class="text-slate-900 font-xl font-bold mb-1 underline-offset-1">Add Post</h1>
+						<h1 class="text-slate-900 font-xl font-bold mb-1 
+							underline-offset-1">Add Post</h1>
 						<br>
 	
-						<label for="title" class="text-slate-900 text-sm font-bold leading-tight pt-2
-							tracking-normal">Title</label>
-						<input id="title" class="mb-3 mt-1 text-slate-900 focus:outline-none focus:border
-							focus:border-slate-700 font-normal w-full h-10 flex items-center pl-2 text-sm
-							border-gray-300 rounded border" placeholder="untitled" />
+						<label for="post-title" class="text-slate-900 text-sm
+							leading-tight pt-2 tracking-normal">Title</label>
+						<input id="post-title" class="mb-3 mt-1 text-slate-900 focus:outline-none
+							focus:border focus:border-slate-700 font-normal w-full h-10 flex
+							items-center pl-2 text-sm border-gray-300 rounded border"
+							placeholder="untitled" />
 	
-						<label for="contents" class="text-slate-900 text-sm font-bold leading-tight pt-3
-							tracking-normal">Contents</label>
-						<textarea id="contents" rows="75" cols="20" class="text-slate-900 focus:outline-none
-							focus:border mt-1 focus:border-slate-700 font-normal w-full h-10 flex 
-							items-center text-sm pl-2border-gray-300 rounded border"
-							style="min-height: 120px" placeholder="whisper in latin.."></textarea>
+						<label for="post-contents" class="text-slate-900 text-sm leading-tight
+							pt-3 tracking-normal">Contents</label>
+						<textarea id="post-contents" rows="75" cols="20" class="text-slate-900
+							focus:outline-none focus:border mt-1 focus:border-slate-700
+							font-normal w-full h-10 flex items-center text-sm pl-2border-gray-300
+							rounded border" style="min-height: 120px" 
+							placeholder="whisper in latin.."></textarea>
 						<br>
 
-						<label for="author" class="text-slate-900 text-sm font-bold leading-tight pt-3
+						<label for="post-author" class="text-slate-900 text-sm leading-tight pt-3
 							tracking-normal">Author</label>
-						<input id="author" class="mb-3 mt-2 text-slate-900 focus:outline-none focus:border
-							focus:border-slate-700 font-normal w-full h-10 flex items-center pl-2 text-sm
-							border-gray-300 rounded border" placeholder="unnamed" />
+						<input id="post-author" class="mb-3 mt-2 text-slate-900 focus:outline-none
+							focus:border focus:border-slate-700 font-normal w-full h-10 flex
+							items-center pl-2 text-sm border-gray-300 rounded border" 
+							placeholder="unnamed" />
 
-						<p class="text-slate-900 text-sm font-bold leading-tight pt-3 tracking-normal">Tag</p>
+						<p class="text-slate-900 text-sm leading-tight pt-3 tracking-normal">
+							Tag</p>
 						<div class="flex mb-3">
 							<div class="form-check form-check-inline">
-								<input class="form-check-input appearance-none rounded-full h-4 w-4 border
-									bg-white checked:bg-orange-900  focus:outline-none my-1 align-top bg-no-repeat
-									bg-center bg-contain float-left mr-2 cursor-pointer" type="radio" name="post-tag" 
-									id="radio1" checked>
-								<input class="form-check-input appearance-none rounded-full h-4 w-4 border
-									bg-white checked:bg-indigo-700  focus:outline-none my-1 align-top bg-no-repeat
-									bg-center bg-contain float-left mr-2 cursor-pointer" type="radio" name="post-tag" 
-									id="radio2">
-								<input class="form-check-input appearance-none rounded-full h-4 w-4 border
-									bg-white checked:bg-pink-700  focus:outline-none my-1 align-top bg-no-repeat
-									bg-center bg-contain float-left mr-2 cursor-pointer" type="radio" name="post-tag" 
-									id="radio3">
+								<input class="form-check-input appearance-none rounded-full h-4 
+									w-4 border bg-white checked:bg-orange-900 
+									focus:outline-none my-1 align-top bg-no-repeat bg-center
+									bg-contain float-left mr-2 cursor-pointer" type="radio"
+									id="pr1" name="post-tag" checked>
+								<input class="form-check-input appearance-none rounded-full h-4
+									w-4 border bg-white checked:bg-indigo-700 
+									focus:outline-none my-1 align-top bg-no-repeat bg-center
+									bg-contain float-left mr-2 cursor-pointer" type="radio"
+									id="pr2" name="post-tag">
+								<input class="form-check-input appearance-none rounded-full h-4
+									w-4 border bg-white checked:bg-pink-700 
+									focus:outline-none my-1 align-top bg-no-repeat bg-center
+									bg-contain float-left mr-2 cursor-pointer" type="radio"
+									id="pr3" name="post-tag">
+								<input class="form-check-input appearance-none rounded-full h-4
+									w-4 border bg-white checked:bg-cyan-700 
+									focus:outline-none my-1 align-top bg-no-repeat bg-center
+									bg-contain float-left mr-2 cursor-pointer" type="radio"
+									id="pr4" name="post-tag">
+								<input class="form-check-input appearance-none rounded-full h-4
+									w-4 border bg-white checked:bg-lime-700 
+									focus:outline-none my-1 align-top bg-no-repeat bg-center
+									bg-contain float-left mr-2 cursor-pointer" type="radio"
+									id="pr5" name="post-tag">
+								<input class="form-check-input appearance-none rounded-full h-4
+									w-4 border bg-white checked:bg-orange-500 
+									focus:outline-none my-1 align-top bg-no-repeat bg-center
+									bg-contain float-left mr-2 cursor-pointer" type="radio"
+									id="pr6" name="post-tag">
+								<input class="form-check-input appearance-none rounded-full h-4
+									w-4 border bg-white checked:bg-purple-700 
+									focus:outline-none my-1 align-top bg-no-repeat bg-center
+									bg-contain float-left mr-2 cursor-pointer" type="radio"
+									id="pr7" name="post-tag">
 							</div>
 						</div>
 
-						<label for="passcode" class="text-slate-900 text-sm font-bold leading-tight pt-3
-							tracking-normal">Passcode</label>
-						<input id="passcode" class="mb-3 mt-2 text-slate-900 focus:outline-none focus:border
-							focus:border-slate-700 font-normal w-full h-10 flex items-center pl-2 text-sm
-							border-gray-300 rounded border" placeholder="unknown" />
+						<label for="post-passcode" class="text-slate-900 text-sm leading-tight
+							pt-3 tracking-normal">Passcode</label>
+						<input id="post-passcode" class="mb-3 mt-2 text-slate-900
+							focus:outline-none focus:border focus:border-slate-700 font-normal
+							w-full h-10 flex items-center pl-2 text-sm border-gray-300
+							rounded border" placeholder="unknown" />
 	
+						<p class="text-amber-600 text-sm leading-tight pt-3 tracking-normal
+							font-bold" id="post-response"></p>
+
 						<div class="flex items-center justify-evenly pt-4 w-full p-6">
-							<button class="focus:outline-none focus:ring-2 focus:ring-offset-2 bg-green-500
-								focus:ring-slate-700 transition duration-150 ease-in-out hover:bg-slate-600
-								rounded px-8 py-2 text-sm text-slate-900" id="post-btn">Express yourself</button>
+							<button class="focus:outline-none focus:ring-2 focus:ring-offset-2
+								bg-green-500 focus:ring-slate-700 transition duration-150
+								ease-in-out hover:bg-slate-600 rounded px-8 py-2 text-sm
+								text-slate-900" id="post-btn">Express yourself</button>
 							<button class="focus:outline-none focus:ring-2 focus:ring-offset-2 pl-4
 								focus:ring-gray-400 ml-3 transition duration-150 text-slate-900
-								ease-in-out hover:border-gray-400 hover:bg-gray-300 border rounded px-8 py-2
-								text-sm bg-red-500" onclick="modalHandler()">Close</button>
+								ease-in-out hover:border-gray-400 hover:bg-gray-300 border
+								rounded px-8 py-2 text-sm bg-red-500"
+								onclick="modalHandler()">Go back</button>
 						</div>
 					</div>
 				</div>
