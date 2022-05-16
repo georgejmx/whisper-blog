@@ -26,16 +26,16 @@ func SetupDatabase() {
 	}
 }
 
-/* Gets the chain stored in backend. This inlcudes all posts and the top 3
-reactions for each post */
-func GetChain(c *gin.Context) {
+/* Gets chain from backend, returning it as a type. This means output can be
+parsed both as JSON and HTML */
+func getChain(c *gin.Context) (int, []tp.Post) {
 	attachHeaders(c)
 
 	// Selecting posts data
 	posts, err := dbo.SelectPosts()
 	if err != nil {
 		sendFailure(c, "selecting posts database operation failed")
-		return
+		return -1, []tp.Post{}
 	}
 
 	// Attaching top reactions to each post, in a modified slice
@@ -44,6 +44,7 @@ func GetChain(c *gin.Context) {
 		postReactions, err := dbo.SelectPostReactions(val.Id)
 		if err != nil {
 			sendFailure(c, fmt.Sprintf("error getting reactions of %v", val.Id))
+			return -1, []tp.Post{}
 		}
 		val.Reactions = postReactions
 		stampedPosts = append(stampedPosts, val)
@@ -58,12 +59,21 @@ func GetChain(c *gin.Context) {
 		daysSince = u.DaysSincePost(stampedPosts[len(stampedPosts)-1].Time)
 	}
 
-	// Sending success response
-	c.JSON(200, gin.H{
-		"marker":     1,
-		"days_since": daysSince,
-		"chain":      stampedPosts,
-	})
+	return daysSince, stampedPosts
+}
+
+/* Gets the chain stored in backend as JSON. This inlcudes all posts and the
+top 3 reactions for each post */
+func GetRawChain(c *gin.Context) {
+	// Sending success json response with chain data
+	daysSince, stampedPosts := getChain(c)
+	if daysSince != -1 {
+		c.JSON(200, gin.H{
+			"marker":     1,
+			"days_since": daysSince,
+			"chain":      stampedPosts,
+		})
+	}
 }
 
 /* Adds a Post contained in the request body to database, subject to

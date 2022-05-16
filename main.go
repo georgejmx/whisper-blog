@@ -25,7 +25,7 @@ func setup(isProduction bool) *gin.Engine {
 	// Setting up database connection and routes
 	r.SetupDatabase()
 	router := gin.Default()
-	router.GET("/data", r.GetChain)
+	router.GET("/data/chain", r.GetRawChain)
 	router.POST("/data/post", r.AddPost)
 	router.POST("/data/react", r.AddReaction)
 	router.Use(cors.Default())

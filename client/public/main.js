@@ -2,9 +2,9 @@ const IV = 'snooping6is9bad0'
 const HASH_INDEX = 28
 const postBtn = document.getElementById('post-btn')
 
-/* Gets latest chain data from backend */
-const getChain = async () => {
-    const posts = await fetch('/data', { method: 'GET' })
+/* Gets latest raw chain data from backend */
+const getRawChain = async () => {
+    const posts = await fetch('/data/chain', { method: 'GET' })
     const responseBody = await posts.json()
 
     // Returning the chain from request body, or empty if failure response
@@ -28,7 +28,7 @@ const addPost = async post => {
 
 /* Adds current chain to frontend */
 const imprintChain = () => {
-    getChain().then(chain => {
+    getRawChain().then(chain => {
         if (chain.length === 0) {
             document.getElementById('chainground').innerHTML = `
                 there are no posts to display.
