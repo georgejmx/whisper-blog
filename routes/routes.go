@@ -1,8 +1,10 @@
 package routes
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
+	"html/template"
 	"log"
 
 	d "github.com/georgejmx/whisper-blog/controller"
@@ -24,6 +26,61 @@ func SetupDatabase() {
 	if err := dbo.Init(); err != nil {
 		log.Fatal("unable to initialise database")
 	}
+}
+
+/* Gets the chain stored in backend as JSON. This inlcudes all posts and the
+top 3 reactions for each post */
+func GetRawChain(c *gin.Context) {
+	// Sending success json response with chain data
+	daysSince, stampedPosts := getChain(c)
+	if daysSince != -1 {
+		c.JSON(200, gin.H{
+			"marker":     1,
+			"days_since": daysSince,
+			"chain":      stampedPosts,
+		})
+	}
+}
+
+/* Gets HTML markup for the frontend chain, dependent on current backup data */
+func GetHtmlChain(c *gin.Context) {
+	var htmlPosts []tp.PostHtmlContent
+	_, stampedPosts := getChain(c)
+
+	// Converting stamped posts to html suitable types
+	for _, stamped := range stampedPosts {
+		// Need to know this to not append an arrow to bottom of genesis post
+		var isSuccessor bool
+		if stamped.Tag == 0 {
+			isSuccessor = false
+		} else {
+			isSuccessor = true
+		}
+		htmlPost := tp.PostHtmlContent{
+			Colour:      u.GetTagColour(stamped.Tag),
+			Timestring:  u.GetTimestring(stamped.Time),
+			IsSuccessor: isSuccessor,
+			Title:       stamped.Title,
+			Contents:    stamped.Contents,
+			Author:      stamped.Author,
+			Reactions:   stamped.Reactions,
+		}
+
+		htmlPosts = append(htmlPosts, htmlPost)
+	}
+
+	// Getting our template, and its structure
+	t, err := template.ParseFiles("templates/chain.html")
+	if err != nil {
+		sendFailure(c, "error parsing html template")
+		return
+	}
+	htmlStructure := tp.HtmlContainer{HtmlPosts: htmlPosts}
+
+	// Executing template, to return byte array. Sending this to client
+	var buf bytes.Buffer
+	t.Execute(&buf, htmlStructure)
+	c.Data(200, "text/html; charset=utf-8", buf.Bytes())
 }
 
 /* Gets chain from backend, returning it as a type. This means output can be
@@ -60,20 +117,6 @@ func getChain(c *gin.Context) (int, []tp.Post) {
 	}
 
 	return daysSince, stampedPosts
-}
-
-/* Gets the chain stored in backend as JSON. This inlcudes all posts and the
-top 3 reactions for each post */
-func GetRawChain(c *gin.Context) {
-	// Sending success json response with chain data
-	daysSince, stampedPosts := getChain(c)
-	if daysSince != -1 {
-		c.JSON(200, gin.H{
-			"marker":     1,
-			"days_since": daysSince,
-			"chain":      stampedPosts,
-		})
-	}
 }
 
 /* Adds a Post contained in the request body to database, subject to
@@ -218,7 +261,7 @@ func checkForGenesis() (bool, error) {
 func attachHeaders(c *gin.Context) *gin.Context {
 	c.Header("Access-Control-Allow-Origin", "*")
 	c.Header("Access-Control-Allow-Credentials", "true")
-	c.Header("Access-Control-Allow-Headers", "Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, accept, origin, Cache-Control, X-Requested-With")
+	c.Header("Access-Control-Allow-Headers", `Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, accept, origin, Cache-Control, X-Requested-With`)
 	c.Header("Access-Control-Allow-Methods", "GET,POST,HEAD,OPTIONS")
 	return c
 }

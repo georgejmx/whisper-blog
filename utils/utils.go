@@ -76,6 +76,36 @@ func CheckDescriptor(descriptor, descriptors string) bool {
 	return false
 }
 
+/* Gets the tailwind CSS colour of a tag */
+func GetTagColour(tag int) string {
+	switch tag {
+	case 0:
+		return "bg-slate-300"
+	case 1:
+		return "bg-orange-300"
+	case 2:
+		return "bg-indigo-300"
+	case 3:
+		return "bg-pink-300"
+	case 4:
+		return "bg-cyan-300"
+	case 5:
+		return "bg-lime-300"
+	case 6:
+		return "bg-orange-100"
+	case 7:
+		return "bg-purple-300"
+	default:
+		return "bg-red-500"
+	}
+}
+
+/* Gets a UI suitable time for the post */
+func GetTimestring(moment time.Time) string {
+	rfc := moment.Format(time.RFC1123)
+	return rfc[0:16]
+}
+
 /* Boilerplate padding function */
 func Pkcs5Padding(ciphertext []byte, blockSize int, after int) []byte {
 	padding := (blockSize - len(ciphertext)%blockSize)

@@ -2,7 +2,7 @@ package types
 
 import "time"
 
-// Represents a post on the UI
+// Represents a post convertible to pretty JSON
 type Post struct {
 	Id          int        `json:"id"`
 	Title       string     `json:"title"`
@@ -15,7 +15,23 @@ type Post struct {
 	Reactions   []Reaction `json:"reactions,omitempty"`
 }
 
-// Represents a reaction on the UI
+// Represents the HTML data of a post on the UI
+type PostHtmlContent struct {
+	Colour      string
+	Timestring  string
+	IsSuccessor bool
+	Title       string
+	Contents    string
+	Author      string
+	Reactions   []Reaction
+}
+
+// Contains above data needed for HTML content structure
+type HtmlContainer struct {
+	HtmlPosts []PostHtmlContent
+}
+
+// Represents a reaction in JSON
 type Reaction struct {
 	Id           int    `json:"id,omitempty"`
 	PostId       int    `json:"postId,omitempty"`
