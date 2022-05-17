@@ -15,8 +15,8 @@
 		<!-- HOME -->
 		<div class="text-center pt-5">
 			<h1 class="text-3xl font-bold underline text-white">WhisperBlog</h1>
-			<div class="mx-16 my-4 flex flex-wrap justify-center">
-				<p class="text-slate-300">Trace the digital Whispers to see what
+			<div class="mx-12 my-4 flex flex-wrap justify-center">
+				<p class="text-slate-300 text-md">Trace the digital Whispers to see what
 					your friends are talking about. Receiving the chain passcode brings
 					great responsibility; stamp your mark on the chain and guard it
 					against malicious actors!</p>
@@ -28,70 +28,17 @@
 				focus:outline-none focus:ring-0 active:bg-green-700 active:shadow-lg transition
 				duration-150 ease-in-out" type="button">Add Post</button>
 			<div id="deck" class="flex flex-col justify-center pt-5 px-2 items-center">
-				<!-- Prototyping posts-->
-				<div class="max-w-md rounded overflow-hidden shadow-lg bg-slate-400">
-					<div class="px-6 py-4">
-						<div class="font-bold text-xl mb-2">a new post</div>
-						<p class="text-gray-700 text-base">
-							this is where the extremely long post contents goes,
-							i really like being in this office blah blah blah.
-							ipfs is so much better than https, could be the
-							basis of a much better web where decentralisation
-							leads to empowerment of small artists, influencers
-							and developers to the detriment of big firms...
-						</p>
-						<p class="text-black font-bold"><u>anon</u> at 4:50pm on a Tuesday</p>
-					</div>
-					<div class="px-6 pb-1">
-						<button class="inline-block bg-green-700 rounded-full p-2 mr-2 mb-2
-							shadow-lg outline-1 outline-slate-900 h-10">
-							<img src="./assets/vote.png" class="w-6"/></button>
-						<span class="inline-block bg-gray-200 rounded-full p-2 text-sm
-							font-semibold text-gray-700 ml-6 mr-2 mb-2 h-8">funny</span>
-						<span class="inline-block bg-gray-200 rounded-full p-2 text-sm
-							font-semibold text-gray-700 mr-2 mb-2 h-8">stale</span>
-						<span class="inline-block bg-gray-200 rounded-full p-2 text-sm
-							font-semibold text-gray-700 mr-2 mb-2 h-8">salty</span>
-					</div>
-				</div>
-				<img src="./assets/arrow.png" class="content-center h-16 w-12 py-1"/>
-				<div class="max-w-md rounded overflow-hidden shadow-lg bg-slate-400">
-					<div class="px-6 py-4">
-						<div class="font-bold text-xl mb-2">a new post</div>
-						<p class="text-gray-700 text-base">
-							this is where the extremely long post contents goes,
-							i really like being in this office blah blah blah.
-							ipfs is so much better than https, could be the
-							basis of a much better web where decentralisation
-							leads to empowerment of small artists, influencers
-							and developers to the detriment of big firms...
-						</p>
-						<p class="text-black font-bold"><u>anon</u> at 4:50pm on a Tuesday</p>
-					</div>
-					<div class="px-6 pb-1">
-						<button class="inline-block bg-green-700 rounded-full p-2 mr-2 mb-2
-							shadow-lg outline-1 outline-slate-900 h-10">
-							<img src="./assets/vote.png" class="w-6"/></button>
-						<span class="inline-block bg-gray-200 rounded-full p-2 text-sm
-							font-semibold text-gray-700 ml-6 mr-2 mb-2 h-8">funny</span>
-						<span class="inline-block bg-gray-200 rounded-full p-2 text-sm
-							font-semibold text-gray-700 mr-2 mb-2 h-8">stale</span>
-						<span class="inline-block bg-gray-200 rounded-full p-2 text-sm
-							font-semibold text-gray-700 mr-2 mb-2 h-8">salty</span>
-					</div>
-				</div>
-				<img src="./assets/arrow.png" class="content-center h-16 w-12 py-1"/>
+				<!-- Server rendered posts-->
 			</div>
 		</div>
 
 		<!-- ADD MODAL -->
-		<div class="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog" 
+		<div class="fixed inset-2 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog" 
 			style="display:none;" aria-modal="true" id="modal">
-			<div class="flex items-end justify-center p-4 text-center md:items-center 
-				sm:block sm:p-0">
+			<div class="flex items-end justify-center text-center md:items-center sm:block">
 				<div class="inline-block max-w-prose overflow-hidden text-left transition-all
 					transform bg-white rounded-lg 2xl:max-w-2xl xl:w-3/5">
-					<div class="relative py-8 px-15 md:px-10 rounded">
+					<div class="relative py-3 md:px-10 rounded">
 						<h1 class="text-slate-900 font-xl font-bold mb-1 
 							underline-offset-1">Add Post</h1>
 						<br>
@@ -119,9 +66,9 @@
 							items-center pl-2 text-sm border-gray-300 rounded border" 
 							placeholder="unnamed" />
 
-						<p class="text-slate-900 text-sm leading-tight pt-3 tracking-normal">
+						<p class="text-slate-900 text-sm mb-3 leading-tight pt-3 tracking-normal">
 							Tag</p>
-						<div class="flex mb-3">
+						<div class="flex">
 							<div class="form-check form-check-inline">
 								<input class="form-check-input appearance-none rounded-full h-4 
 									w-4 border bg-white checked:bg-orange-900 
@@ -171,7 +118,7 @@
 						<p class="text-amber-600 text-sm leading-tight pt-3 tracking-normal
 							font-bold" id="post-response"></p>
 
-						<div class="flex items-center justify-evenly pt-4 w-full p-6">
+						<div class="flex items-center justify-evenly w-full p-2">
 							<button class="focus:outline-none focus:ring-2 focus:ring-offset-2
 								bg-green-500 focus:ring-slate-700 transition duration-150
 								ease-in-out hover:bg-slate-600 rounded px-8 py-2 text-sm
