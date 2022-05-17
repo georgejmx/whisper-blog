@@ -20,6 +20,7 @@ type PostHtmlContent struct {
 	Colour      string
 	Timestring  string
 	IsSuccessor bool
+	Id          int
 	Title       string
 	Contents    string
 	Author      string

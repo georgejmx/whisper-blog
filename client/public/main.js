@@ -1,15 +1,14 @@
-const postBtn = document.getElementById('post-btn')
 const IV = 'snooping6is9bad0'
 const HASH_INDEX = 28
 
 /* Gets latest raw chain data from backend */
-const getChain = async () => {
+const getChainHtml = async () => {
     const posts = await fetch('/html/chain', { method: 'GET' })
     return await posts.text()
 }
 
 /* Adds a post to the chain */
-const addPost = async post => {
+const addPostData = async post => {
     const response = await fetch('/data/post', {
         method: 'POST',
         headers: {
@@ -22,23 +21,22 @@ const addPost = async post => {
 
 /* Adds current chain to frontend */
 const imprintChain = () => {
-    getChain().then(content => {
+    getChainHtml().then(content => {
         if (content.length > 1) {
             document.getElementById('deck').innerHTML = content
         } else {
             document.getElementById('deck').innerHTML = `<h2 class="text-lg
-            text-white">go make the first post! no passcode is required.</h2>`
+            text-white">Go make the first post! No passcode is required.</h2>`
         }
     }).catch(err => {
         document.getElementById('deck').innerHTML = `<h2 class="text-lg
-        text-red-400">error fetching chain from server.</h2>`
+        text-red-400">Error fetching chain from server.</h2>`
         console.error(err)
     })
 }
 
 /* Processes an attempt to add a new post */
-postBtn.addEventListener('click', async event => {
-    event.preventDefault()
+const addPost = () => {
     const responseBox = document.getElementById('post-response')
     let tag
 
@@ -61,7 +59,7 @@ postBtn.addEventListener('click', async event => {
     }
 
     // Communicating with server; attempting *addPost* then showing result
-    addPost(postParams).then(resp => {
+    addPostData(postParams).then(resp => {
         if (resp.marker === 1) {
             const newCode = unlockRawPasscode(resp.data, hash)
             responseBox.textContent = 
@@ -69,6 +67,7 @@ postBtn.addEventListener('click', async event => {
 
             // Refreshing chain html
             imprintChain()
+            document.getElementById('add-modal-tr').textContent = 'Show passcode'
         } else if (resp.marker === 2) {
             const newCode = unlockRawPasscode(
                 resp.data, CryptoJS.SHA256('gen6si9').toString())
@@ -77,14 +76,15 @@ postBtn.addEventListener('click', async event => {
 
             // Refreshing chain html
             imprintChain()
+            document.getElementById('add-modal-tr').textContent = 'Show passcode'
         } else {
             responseBox.textContent = `Failure! ${resp.message}`
         }
     }).catch(err => {
-        responseBox.textContent = "Software error occured"
+        responseBox.textContent = 'Error adding post'
         console.error(err)
     })
-})
+}
 
 window.onload = imprintChain
 
