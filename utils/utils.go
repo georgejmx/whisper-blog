@@ -88,9 +88,9 @@ func GetTagColour(tag int) string {
 	case 3:
 		return "bg-pink-300"
 	case 4:
-		return "bg-cyan-300"
+		return "bg-cyan-200"
 	case 5:
-		return "bg-lime-300"
+		return "bg-lime-200"
 	case 6:
 		return "bg-orange-100"
 	case 7:

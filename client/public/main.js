@@ -1,17 +1,11 @@
+const postBtn = document.getElementById('post-btn')
 const IV = 'snooping6is9bad0'
 const HASH_INDEX = 28
-const postBtn = document.getElementById('post-btn')
 
 /* Gets latest raw chain data from backend */
-const getRawChain = async () => {
-    const posts = await fetch('/data/chain', { method: 'GET' })
-    const responseBody = await posts.json()
-
-    // Returning the chain from request body, or empty if failure response
-    if (responseBody.marker === 1) {
-      return responseBody.chain
-    }
-    return []
+const getChain = async () => {
+    const posts = await fetch('/html/chain', { method: 'GET' })
+    return await posts.text()
 }
 
 /* Adds a post to the chain */
@@ -28,17 +22,17 @@ const addPost = async post => {
 
 /* Adds current chain to frontend */
 const imprintChain = () => {
-    getRawChain().then(chain => {
-        if (chain.length === 0) {
-            document.getElementById('chainground').innerHTML = `
-                there are no posts to display.
-            `
+    getChain().then(content => {
+        if (content.length > 1) {
+            document.getElementById('deck').innerHTML = content
         } else {
-            document.getElementById('chainground').innerHTML = `
-                we now have ${chain.length} posts :) 
-            `
-            console.log(chain)
+            document.getElementById('deck').innerHTML = `<h2 class="text-lg
+            text-white">go make the first post! no passcode is required.</h2>`
         }
+    }).catch(err => {
+        document.getElementById('deck').innerHTML = `<h2 class="text-lg
+        text-red-400">error fetching chain from server.</h2>`
+        console.error(err)
     })
 }
 
@@ -80,12 +74,15 @@ postBtn.addEventListener('click', async event => {
                 resp.data, CryptoJS.SHA256('gen6si9').toString())
             responseBox.textContent = `${resp.message}. 
                 The next passcode is ${newCode}`
+
+            // Refreshing chain html
+            imprintChain()
         } else {
             responseBox.textContent = `Failure! ${resp.message}`
         }
     }).catch(err => {
         responseBox.textContent = "Software error occured"
-        console.log(err)
+        console.error(err)
     })
 })
 

@@ -10,8 +10,9 @@
             shadow-lg outline-1 outline-slate-900 h-10">
             <img src="./assets/vote.png" class="w-6"/></button>
         {{range .Reactions}}
-        <span class="inline-block bg-gray-200 rounded-full p-2 text-sm
-            font-semibold text-gray-700 ml-6 mr-2 mb-2 h-8">{{.Descriptor}}</span>
+        <span class="inline-block bg-gray-200 rounded-full p-1 text-sm
+            font-semibold text-gray-700 ml-6 mr-2 h-8
+            border-2 border-slate-600">{{.Descriptor}}</span>
         {{end}}
     </div>
 </div>
