@@ -60,7 +60,6 @@ func GetHtmlChain(c *gin.Context) {
 			Colour:      u.GetTagColour(stamped.Tag),
 			Timestring:  u.GetTimestring(stamped.Time),
 			IsSuccessor: isSuccessor,
-			Id:          stamped.Id,
 			Title:       stamped.Title,
 			Contents:    stamped.Contents,
 			Author:      stamped.Author,
@@ -71,7 +70,7 @@ func GetHtmlChain(c *gin.Context) {
 	}
 
 	// Getting our template, and its structure
-	t, err := template.ParseFiles("templates/chain.gohtml")
+	t, err := template.ParseFiles("templates/chain.html")
 	if err != nil {
 		sendFailure(c, "error parsing html template")
 		return
