@@ -86,8 +86,6 @@ const addPost = () => {
     })
 }
 
-window.onload = imprintChain
-
 /* Unlocks the new raw passcode from server response using hidden security 
 settings in frontend */
 const unlockRawPasscode = (ciphertext, storedHash) => {
@@ -102,34 +100,26 @@ const unlockRawPasscode = (ciphertext, storedHash) => {
     return decrypted.toString(CryptoJS.enc.Utf8)
 }
 
-let modal = document.getElementById("modal");
-function modalHandler(val) {
-    if (val) {
-        fadeIn(modal);
+/* Toggles whether the add post modal is shown or not */
+const addModalHandler = isOpen => {
+    if (isOpen) {
+        document.getElementById('add-modal').style.display = 'initial'
     } else {
-        fadeOut(modal);
+        document.getElementById('add-modal').style.display = 'none'
     }
 }
-function fadeOut(el) {
-    el.style.opacity = 1;
-    (function fade() {
-        if ((el.style.opacity -= 0.1) < 0) {
-            el.style.display = "none";
-        } else {
-            requestAnimationFrame(fade);
-        }
-    })();
-    el.style.display = 'none'
+
+/* Toggles whether the add reaction modal is shown or not, also gets the modal
+contents from server dependent on state */
+const reactModalHandler = val => {
+    // Handle the case where we want to close the modal
+    if (val == 0 || !val) {
+        document.getElementById('react-modal').style.display = 'none'
+        return
+    }
+
+    // getReactionDeckHtml(val).then .....
+    document.getElementById('react-modal').style.display = 'initial'
 }
-function fadeIn(el, display) {
-    el.style.opacity = 0;
-    el.style.display = display || "flex";
-    (function fade() {
-        let val = parseFloat(el.style.opacity);
-        if (!((val += 0.2) > 1)) {
-            el.style.opacity = val;
-            requestAnimationFrame(fade);
-        }
-    })();
-    el.style.display = 'initial'
-}
+
+window.onload = imprintChain
