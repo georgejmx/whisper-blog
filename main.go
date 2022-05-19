@@ -29,6 +29,7 @@ func setup(isProduction bool) *gin.Engine {
 	router.POST("/data/post", r.AddPost)
 	router.POST("/data/react", r.AddReaction)
 	router.GET("/html/chain", r.GetHtmlChain)
+	router.GET("/html/reaction/:id", r.GetHtmlReactions)
 
 	// Setting up cors, serving client
 	router.Use(cors.Default())

@@ -28,8 +28,13 @@ type PostHtmlContent struct {
 }
 
 // Contains above data needed for HTML content structure
-type HtmlContainer struct {
+type HtmlPostContainer struct {
 	HtmlPosts []PostHtmlContent
+}
+
+// Contains above data needed for HTML content structure
+type HtmlReactionContainer struct {
+	Descriptors []string
 }
 
 // Represents a reaction in JSON

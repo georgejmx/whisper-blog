@@ -26,7 +26,7 @@
 				hover:bg-green-800 hover:shadow-lg focus:bg-green-600 focus:shadow-lg 
 				focus:outline-none focus:ring-0 active:bg-green-700 active:shadow-lg transition
 				duration-150 ease-in-out" type="button" id="add-modal-tr">Add Post</button>
-			<div id="deck" class="flex flex-col justify-center pt-5 px-2 items-center">
+			<div id="deck" class="flex flex-col justify-center pt-5 px-2 pb-1 items-center">
 				<!-- Server rendered posts-->
 			</div>
 		</div>
@@ -145,13 +145,20 @@
 							underline-offset-1">Add Reaction</h1>
 						<br>
 
-						<div id="react-deck">
-							This is where possible reactions will go..
+						<p class="text-sm">Click a possible descriptor to react to the selected
+							post. Want to spam the blog with malicious adjectives? Don't worry, we
+							have a voting system where passcodes for the previous 3 posts can submit
+							<i>gravitas reactions</i> that carry more weight.. </p>
+
+						<p class="text-slate-900 text-sm mb-2 leading-tight pt-3 tracking-normal">
+							Descriptors</p>
+						<div class="pb-5" id="react-deck">
+							<!-- Server generated buttons -->
 						</div>
 
 						<label for="react-passcode" class="text-slate-900 text-sm leading-tight
 							pt-3 tracking-normal">Passcode</label>
-						<input id="post-passcode" class="mb-3 mt-2 text-slate-900
+						<input id="react-passcode" class="mb-3 mt-2 text-slate-900
 							focus:outline-none focus:border focus:border-slate-700 font-normal
 							w-full h-10 flex items-center pl-2 text-sm border-gray-300
 							rounded border" placeholder="optional" />

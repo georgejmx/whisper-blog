@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"html/template"
 	"log"
+	"strconv"
+	"strings"
 
 	d "github.com/georgejmx/whisper-blog/controller"
 	x "github.com/georgejmx/whisper-blog/security"
@@ -76,12 +78,45 @@ func GetHtmlChain(c *gin.Context) {
 		sendFailure(c, "error parsing html template")
 		return
 	}
-	htmlStructure := tp.HtmlContainer{HtmlPosts: htmlPosts}
+	htmlStructure := tp.HtmlPostContainer{HtmlPosts: htmlPosts}
 
 	// Executing template, to return byte array. Sending this to client
 	var buf bytes.Buffer
 	t.Execute(&buf, htmlStructure)
 	c.Data(200, "text/html; charset=utf-8", buf.Bytes())
+}
+
+/* Gets html reactions that will be passed to frontend */
+func GetHtmlReactions(c *gin.Context) {
+	attachHeaders(c)
+
+	postId, err := strconv.ParseInt(c.Param("id"), 10, 64)
+	if err != nil {
+		sendFailure(c, "error parsing url parameter")
+		return
+	}
+
+	descriptorsStr, err := dbo.SelectDescriptors(int(postId))
+	if err != nil {
+		sendFailure(c, "error getting post descriptors")
+		return
+	}
+
+	descriptors := strings.Split(descriptorsStr, ";")
+
+	// Getting our template, and its structure
+	t, err := template.ParseFiles("templates/descriptors.gohtml")
+	if err != nil {
+		sendFailure(c, "error parsing html template")
+		return
+	}
+	htmlStructure := tp.HtmlReactionContainer{Descriptors: descriptors}
+
+	// Executing template, to return byte array. Sending this to client
+	var buf bytes.Buffer
+	t.Execute(&buf, htmlStructure)
+	c.Data(200, "text/html; charset=utf-8", buf.Bytes())
+
 }
 
 /* Gets chain from backend, returning it as a type. This means output can be

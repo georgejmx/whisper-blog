@@ -1,20 +1,38 @@
 const IV = 'snooping6is9bad0'
 const HASH_INDEX = 28
 
+let SelectedPostId, SelectedDescriptor
+
 /* Gets latest raw chain data from backend */
 const getChainHtml = async () => {
     const posts = await fetch('/html/chain', { method: 'GET' })
     return await posts.text()
 }
 
+/* Gets latest reaction data from backend */
+const getReactionDeckHtml = async val => {
+    const descriptors = await fetch(`/html/reaction/${val}`, {
+        method: 'GET'
+    })
+    return await descriptors.text()
+}
+
 /* Adds a post to the chain */
 const addPostData = async post => {
     const response = await fetch('/data/post', {
         method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(post)
+    })
+    return await response.json()
+}
+
+/* Adds a reaction to a post */
+const addReactionData = async reaction => {
+    const response = await fetch('/data/react', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(reaction)
     })
     return await response.json()
 }
@@ -35,16 +53,46 @@ const imprintChain = () => {
     })
 }
 
+/* Processes an attempt to add a reaction */
+function addReaction() {
+    const responseBox = document.getElementById('react-response')
+
+    const reactParams = {
+        'postId': SelectedPostId,
+        'descriptor': SelectedDescriptor
+    }
+    if (document.getElementById('react-passcode').value) {
+        reactParams['hash'] = document.getElementById('react-passcode').value
+    }
+
+
+    addReactionData(reactParams).then(resp => {
+        if (resp.marker === 1) {
+            // Refresh chain then close modal
+            imprintChain()
+            reactModalHandler(0)
+            return
+        }
+
+        responseBox.textContent = `${resp.message}. Try again if you have a
+            valid hash`
+    }).catch(err => {
+        responseBox.textContent = 'Error adding reaction'
+        console.error(err)
+    })
+}
+
 /* Processes an attempt to add a new post */
-const addPost = () => {
+function addPost() {
     const responseBox = document.getElementById('post-response')
     let tag
 
     // Parsing tag and hash
     const options = ['pr1', 'pr2', 'pr3', 'pr4', 'pr5', 'pr6', 'pr7']
-    for (let option of options) {
-        if (document.getElementById(option).checked)
+    for (const option of options) {
+        if (document.getElementById(option).checked) {
             tag = parseInt(option[2])
+        }
     }
     const hash = CryptoJS.SHA256(
         document.getElementById('post-passcode').value).toString()
@@ -62,7 +110,7 @@ const addPost = () => {
     addPostData(postParams).then(resp => {
         if (resp.marker === 1) {
             const newCode = unlockRawPasscode(resp.data, hash)
-            responseBox.textContent = 
+            responseBox.textContent =
                 `The new passcode is ${newCode}; ${resp.message}`
 
             // Refreshing chain html
@@ -86,12 +134,12 @@ const addPost = () => {
     })
 }
 
-/* Unlocks the new raw passcode from server response using hidden security 
+/* Unlocks the new raw passcode from server response using hidden security
 settings in frontend */
 const unlockRawPasscode = (ciphertext, storedHash) => {
     const cipherHex = CryptoJS.enc.Hex.parse(ciphertext)
     const parsedKey = CryptoJS.enc.Utf8.parse(
-        storedHash.substring(HASH_INDEX, HASH_INDEX+32))
+        storedHash.substring(HASH_INDEX, HASH_INDEX + 32))
     const parsedIv = CryptoJS.enc.Utf8.parse(IV)
 
     const cipherCp = { ciphertext: cipherHex }
@@ -101,7 +149,7 @@ const unlockRawPasscode = (ciphertext, storedHash) => {
 }
 
 /* Toggles whether the add post modal is shown or not */
-const addModalHandler = isOpen => {
+function addModalHandler(isOpen) {
     if (isOpen) {
         document.getElementById('add-modal').style.display = 'initial'
     } else {
@@ -111,15 +159,32 @@ const addModalHandler = isOpen => {
 
 /* Toggles whether the add reaction modal is shown or not, also gets the modal
 contents from server dependent on state */
-const reactModalHandler = val => {
+function reactModalHandler(val) {
     // Handle the case where we want to close the modal
-    if (val == 0 || !val) {
+    if (val === 0) {
         document.getElementById('react-modal').style.display = 'none'
         return
     }
 
-    // getReactionDeckHtml(val).then .....
+    SelectedPostId = val
+    // Imprint modal content before showing
+    getReactionDeckHtml(val).then(content => {
+        console.log(content)
+        if (content.length > 1) {
+            document.getElementById('react-deck').innerHTML = content
+        } else {
+            document.getElementById('react-deck').innerHTML = `
+                <p class="text-sm">Unable to get reactions</p>`
+        }
+    }).catch(err => {
+        document.getElementById('react-deck').innerHTML = `
+        <p class="text-sm">Unable to get reactions</p>`
+        console.error(err)
+    })
     document.getElementById('react-modal').style.display = 'initial'
 }
+
+/* Set the selected descriptor from react modal */
+function selectDesc(descriptor) { SelectedDescriptor = descriptor }
 
 window.onload = imprintChain
