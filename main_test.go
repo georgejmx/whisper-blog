@@ -169,7 +169,7 @@ func TestAddAnonReaction(t *testing.T) {
 	}
 
 	// Getting the chain, needed to find correct descriptors
-	resp, err := http.Get(fmt.Sprintf("%s/data", testServer.URL))
+	resp, err := http.Get(fmt.Sprintf("%s/data/chain", testServer.URL))
 	if err != nil {
 		t.Fatal("unable to get chain")
 	}
@@ -209,7 +209,7 @@ func TestAddSignedReaction(t *testing.T) {
 	}
 
 	// Getting the chain, needed to find correct descriptors
-	resp, err := http.Get(fmt.Sprintf("%s/data", testServer.URL))
+	resp, err := http.Get(fmt.Sprintf("%s/data/chain", testServer.URL))
 	if err != nil {
 		t.Fatal("unable to get chain")
 	}
