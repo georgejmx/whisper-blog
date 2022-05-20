@@ -58,13 +58,16 @@ function addReaction() {
     const responseBox = document.getElementById('react-response')
 
     const reactParams = {
-        'postId': SelectedPostId,
-        'descriptor': SelectedDescriptor
-    }
-    if (document.getElementById('react-passcode').value) {
-        reactParams['hash'] = document.getElementById('react-passcode').value
+        postId: SelectedPostId,
+        descriptor: SelectedDescriptor,
     }
 
+    // Setting correct hash value
+    if (document.getElementById('react-passcode').value) {
+        const hash = CryptoJS.SHA256(
+            document.getElementById('react-passcode').value).toString()
+        reactParams['hash'] = hash
+    }
 
     addReactionData(reactParams).then(resp => {
         if (resp.marker === 1) {
@@ -169,7 +172,6 @@ function reactModalHandler(val) {
     SelectedPostId = val
     // Imprint modal content before showing
     getReactionDeckHtml(val).then(content => {
-        console.log(content)
         if (content.length > 1) {
             document.getElementById('react-deck').innerHTML = content
         } else {
