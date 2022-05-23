@@ -1,6 +1,6 @@
 # TODO
 
-# v0.2
+## v0.2
 
 - Frontend
     - Display bronze silver and gold of each descriptor in chain, capped at 3
@@ -16,7 +16,7 @@
 
 **Time to deploy to GCP**
 
-# v0.3
+## v0.3
 
 - Use typescript in frontend
 - Multiple chain support (not as hard as it looks)

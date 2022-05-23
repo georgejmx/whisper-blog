@@ -297,7 +297,9 @@ func checkForGenesis() (bool, error) {
 func attachHeaders(c *gin.Context) *gin.Context {
 	c.Header("Access-Control-Allow-Origin", "*")
 	c.Header("Access-Control-Allow-Credentials", "true")
-	c.Header("Access-Control-Allow-Headers", `Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, accept, origin, Cache-Control, X-Requested-With`)
+	c.Header("Access-Control-Allow-Headers",
+		`Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, 
+		Authorization, accept, origin, Cache-Control, X-Requested-With`)
 	c.Header("Access-Control-Allow-Methods", "GET,POST,HEAD,OPTIONS")
 	return c
 }

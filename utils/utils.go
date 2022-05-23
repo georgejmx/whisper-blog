@@ -96,7 +96,7 @@ func GetTagColour(tag int) string {
 	case 7:
 		return "bg-purple-300"
 	default:
-		return "bg-red-500"
+		return "bg-red-400"
 	}
 }
 
