@@ -33,7 +33,7 @@ func GetHtmlChain(c *gin.Context) {
 			Title:       stamped.Title,
 			Contents:    stamped.Contents,
 			Author:      stamped.Author,
-			Reactions:   stamped.Reactions,
+			Reactions:   u.AwardDescriptors(stamped.Reactions),
 		}
 
 		htmlPosts = append(htmlPosts, htmlPost)

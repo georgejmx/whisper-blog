@@ -4,9 +4,12 @@ import (
 	"bytes"
 	"crypto/rand"
 	"math/big"
+	"sort"
 	"strconv"
 	"strings"
 	"time"
+
+	tp "github.com/georgejmx/whisper-blog/types"
 )
 
 const DAYS_INT = 86400
@@ -98,6 +101,42 @@ func GetTagColour(tag int) string {
 	default:
 		return "bg-red-400"
 	}
+}
+
+/* Returns and adds colour to the top 3 descriptors */
+func AwardDescriptors(reactions []tp.Reaction) []tp.Reaction {
+	sort.Slice(reactions, func(i, j int) bool {
+		return reactions[i].Gravitas > reactions[j].Gravitas
+	})
+
+	// Colouring first reaction
+	if len(reactions) > 0 {
+		reactions[0].Colour = "bg-yellow-300"
+	}
+
+	// Colouring second reaction
+	if len(reactions) > 1 {
+		if reactions[1].Gravitas < reactions[0].Gravitas {
+			reactions[1].Colour = "bg-slate-400"
+		} else {
+			reactions[1].Colour = reactions[0].Colour
+		}
+	}
+
+	// Colouring third reaction
+	if len(reactions) > 2 {
+		if reactions[2].Gravitas < reactions[1].Gravitas {
+			reactions[2].Colour = "bg-amber-600"
+		} else {
+			reactions[2].Colour = reactions[1].Colour
+		}
+	}
+
+	// Chopping slice at 3 elements
+	if len(reactions) > 3 {
+		return reactions[:3]
+	}
+	return reactions
 }
 
 /* Gets a UI suitable time for the post */

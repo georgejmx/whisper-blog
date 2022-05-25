@@ -44,6 +44,7 @@ type Reaction struct {
 	Descriptor   string `json:"descriptor"`
 	Gravitas     int    `json:"gravitas"`
 	GravitasHash string `json:"hash,omitempty"`
+	Colour       string
 }
 
 // A template for an object that performs database interactions
