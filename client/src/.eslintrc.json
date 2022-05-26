@@ -1,4 +1,4 @@
-/* Usage: ./node_modules/.bin/eslint public/main.js */
+/* Usage: ../node_modules/.bin/eslint public/main.js */
 {
     "env": {
         "browser": true,

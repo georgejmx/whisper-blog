@@ -1,4 +1,4 @@
-/* Usage: npx tailwindcss -i ./input.css -o ./public/tw.css --watch */
+/* Usage: npx tailwindcss -i .src/input.css -o ./public/tw.css --watch */
 @tailwind base;
 @tailwind components;
 
