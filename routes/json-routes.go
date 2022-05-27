@@ -42,11 +42,23 @@ func AddPost(c *gin.Context) {
 		return
 	}
 
-	// If this is the genesis post, can skip hash validation
+	// Determining if this is the genesis post
 	isGenesis, err := checkForGenesis()
 	if err != nil {
 		sendFailure(c, "error when determing if genesis post")
 		return
+	}
+
+	// Need to perform time validation if not genesis post
+	if !isGenesis {
+		latestTimestamp, err := dbo.SelectLatestTimestamp()
+		if err != nil {
+			sendFailure(c, "error determining latest timestamp")
+			return
+		} else if u.TimeSincePost(false, latestTimestamp) < 2 {
+			sendFailure(c, "must wait 2 hours between posts")
+			return
+		}
 	}
 
 	// Need to perform hash validation if not genesis post

@@ -51,7 +51,8 @@ func getChain(c *gin.Context) (int, []tp.Post) {
 		daysSince = 0
 		stampedPosts = []tp.Post{}
 	} else {
-		daysSince = u.DaysSincePost(stampedPosts[len(stampedPosts)-1].Time)
+		daysSince = u.TimeSincePost(
+			true, stampedPosts[len(stampedPosts)-1].Time)
 	}
 
 	return daysSince, stampedPosts

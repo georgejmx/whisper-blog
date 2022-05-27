@@ -12,7 +12,10 @@ import (
 	tp "github.com/georgejmx/whisper-blog/types"
 )
 
-const DAYS_INT = 86400
+const (
+	HOURS_INT = 3600  // 1 hour in seconds
+	DAYS_INT  = 86400 // 1 day in seconds
+)
 
 /* Generates a new plain-text to lead the chain, that is moderately secure
 in plaintext */
@@ -30,16 +33,19 @@ func GenerateRawPasscode() string {
 }
 
 /* Gets the days since last post as int */
-func DaysSincePost(lastPostTime time.Time) int {
+func TimeSincePost(isDays bool, lastPostTime time.Time) int {
 	prevTime := lastPostTime.Unix()
 	curTime := time.Now().Unix()
-	return int((curTime - prevTime) / DAYS_INT)
+	if isDays {
+		return int((curTime - prevTime) / DAYS_INT)
+	}
+	return int((curTime - prevTime) / HOURS_INT)
 }
 
 /* Validates if the provided hash index has the authority to make a post at
 this time */
 func ValidateHashTiming(lastPostTime time.Time, hashIndex int) bool {
-	daysElapsed := DaysSincePost(lastPostTime)
+	daysElapsed := TimeSincePost(true, lastPostTime)
 
 	// the next person can exclusively make a post for 5 days
 	if hashIndex <= 0 && daysElapsed < 5 {
