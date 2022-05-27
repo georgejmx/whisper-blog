@@ -2,10 +2,7 @@
 
 ## v0.2
 
-- Backend
-    - Embed *client/public...*, *templates/...* and */words/adjectives.txt* into binary
-    - Https
-- Updated README; write about the stuff that is gitignored in build instructions
+https
 
 **Time to deploy to AWS**
 

@@ -2,6 +2,7 @@ package routes
 
 import (
 	"bytes"
+	"embed"
 	"html/template"
 	"strconv"
 	"strings"
@@ -10,6 +11,9 @@ import (
 	u "github.com/georgejmx/whisper-blog/utils"
 	"github.com/gin-gonic/gin"
 )
+
+//go:embed templates/*
+var templateData embed.FS
 
 /* Gets HTML markup for the frontend chain, dependent on current backup data */
 func GetHtmlChain(c *gin.Context) {
@@ -41,7 +45,7 @@ func GetHtmlChain(c *gin.Context) {
 	}
 
 	// Getting our template, and its structure
-	t, err := template.ParseFiles("templates/chain.gohtml")
+	t, err := template.ParseFS(templateData, "templates/chain.gohtml")
 	if err != nil {
 		sendFailure(c, "error parsing html template")
 		return
@@ -74,7 +78,7 @@ func GetHtmlReactions(c *gin.Context) {
 	descriptors := strings.Split(descriptorsStr, ";")
 
 	// Getting our template, and its structure
-	t, err := template.ParseFiles("templates/descriptors.gohtml")
+	t, err := template.ParseFS(templateData, "templates/descriptors.gohtml")
 	if err != nil {
 		sendFailure(c, "error parsing html template")
 		return

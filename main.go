@@ -5,6 +5,10 @@ LICENSE file. */
 package main
 
 import (
+	"embed"
+	"io/fs"
+	"net/http"
+
 	config "github.com/georgejmx/whisper-blog/config"
 	r "github.com/georgejmx/whisper-blog/routes"
 
@@ -12,6 +16,9 @@ import (
 	"github.com/gin-gonic/gin"
 	"go.uber.org/ratelimit"
 )
+
+//go:embed client/public/*
+var client embed.FS
 
 /* Program entry point when used in production */
 func main() {
@@ -24,21 +31,28 @@ func setup(isProduction bool, rl ratelimit.Limiter) *gin.Engine {
 	// Setting config
 	config.SetupEnv(isProduction)
 
-	// Setting up database connection and routes
+	// Setting up database connection, rate limiting, router and cors
 	r.SetupDatabase()
 	r.Rl = rl
 	router := gin.Default()
+	router.Use(cors.Default())
+
+	// Defining routes
 	router.GET("/data/chain", r.GetRawChain)
 	router.POST("/data/post", r.AddPost)
 	router.POST("/data/react", r.AddReaction)
 	router.GET("/html/chain", r.GetHtmlChain)
 	router.GET("/html/reaction/:id", r.GetHtmlReactions)
 
-	// Setting up cors, serving client
-	router.Use(cors.Default())
-	router.Static("/w", "./client/public")
+	// Serving client at root directory
+	stripped, err := fs.Sub(client, "client/public")
+	if err != nil {
+		panic("error when bundling client files")
+	}
+	router.StaticFS("/w", http.FS(stripped))
 	router.GET("/", func(c *gin.Context) {
 		c.Redirect(301, "/w")
 	})
+
 	return router
 }

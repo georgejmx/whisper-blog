@@ -59,5 +59,8 @@ func SetupEnv(isProduction bool) {
 }
 ```
 
+Also adjust the constants at the top of *client/src/main.js* to match the above
+values for `[YOUR IV]` and `[YOUR SPLICE INDEX]`
+
 - Run `go test ./...` to ensure your build is stable
 - Execute `go run main.go` to spin up the site

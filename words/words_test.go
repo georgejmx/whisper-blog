@@ -7,7 +7,6 @@ import (
 
 /* Tests that the correct descriptors for a post are generated */
 func TestGenerateDescriptors(t *testing.T) {
-	adjectivesPath = "../words/adjectives.txt"
 	output, err := GenerateDescriptors()
 	if err != nil {
 		t.Log("error generating descriptors", err)
@@ -24,7 +23,6 @@ func TestGenerateDescriptors(t *testing.T) {
 /* Tests that parseWord does what it needs to; the exact functionality works
 for all edge cases */
 func TestParseWord(t *testing.T) {
-	adjectivesPath = "../words/adjectives.txt"
 	output, err := parseWord(4)
 	if err != nil {
 		t.Log("error when opening the file: ", err)
