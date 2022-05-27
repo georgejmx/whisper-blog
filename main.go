@@ -1,6 +1,7 @@
 /* Copyright 2022 George Miller <georgejmx@pm.me>.
 Usage of this code is subject to a GNU public license as detailed in the
-LICENSE file. */
+LICENSE file. *This code* is defined to be everything statically linked
+to this file by golang */
 
 package main
 
@@ -23,10 +24,10 @@ var client embed.FS
 /* Program entry point when used in production */
 func main() {
 	rl := ratelimit.New(150)
-	setup(true, rl).Run("localhost:8000")
+	setup(true, rl).RunTLS(":8000", "localhost.crt", "localhost.key")
 }
 
-/* Read production configuration and setup production server */
+/* Read configuration and setup production or test server */
 func setup(isProduction bool, rl ratelimit.Limiter) *gin.Engine {
 	// Setting config
 	config.SetupEnv(isProduction)
