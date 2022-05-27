@@ -5,6 +5,7 @@ go 1.18
 require github.com/gin-gonic/gin v1.7.7
 
 require (
+	github.com/andres-erbsen/clock v0.0.0-20160526145045-9e14626cd129 // indirect
 	golang.org/x/text v0.3.7 // indirect
 	google.golang.org/protobuf v1.28.0 // indirect
 )
@@ -24,6 +25,7 @@ require (
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v1.0.2 // indirect
 	github.com/ugorji/go/codec v1.2.7 // indirect
+	go.uber.org/ratelimit v0.2.0
 	golang.org/x/crypto v0.0.0-20220427172511-eb4f295cb31f // indirect
 	golang.org/x/sys v0.0.0-20220429121018-84afa8d3f7b3 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect

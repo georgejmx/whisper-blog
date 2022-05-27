@@ -13,6 +13,7 @@ import (
 
 /* Gets HTML markup for the frontend chain, dependent on current backup data */
 func GetHtmlChain(c *gin.Context) {
+	Rl.Take()
 	var htmlPosts []tp.PostHtmlContent
 	_, stampedPosts := getChain(c)
 
@@ -55,6 +56,7 @@ func GetHtmlChain(c *gin.Context) {
 
 /* Gets html reactions that will be passed to frontend */
 func GetHtmlReactions(c *gin.Context) {
+	Rl.Take()
 	attachHeaders(c)
 
 	postId, err := strconv.ParseInt(c.Param("id"), 10, 64)

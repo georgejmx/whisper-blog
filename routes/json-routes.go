@@ -12,10 +12,13 @@ import (
 
 const MAX_ANON_REACTIONS int = 6
 
+var IsProduction = true
+
 /* Gets the chain stored in backend as JSON. This inlcudes all posts and the
 top 3 reactions for each post */
 func GetRawChain(c *gin.Context) {
 	// Sending success json response with chain data
+	Rl.Take()
 	daysSince, stampedPosts := getChain(c)
 	if daysSince != -1 {
 		c.JSON(200, gin.H{
@@ -29,6 +32,7 @@ func GetRawChain(c *gin.Context) {
 /* Adds a Post contained in the request body to database, subject to
 validation */
 func AddPost(c *gin.Context) {
+	Rl.Take()
 	var (
 		post   tp.Post
 		marker int
@@ -37,7 +41,7 @@ func AddPost(c *gin.Context) {
 	// Parsing request body
 	body, err := c.GetRawData()
 	err2 := json.Unmarshal(body, &post)
-	if err != nil || err2 != nil || len(post.Author) > 10 {
+	if err != nil || err2 != nil || !u.ValidateInputLength(post) {
 		sendFailure(c, "invalid request body")
 		return
 	}
@@ -50,7 +54,7 @@ func AddPost(c *gin.Context) {
 	}
 
 	// Need to perform time validation if not genesis post
-	if !isGenesis {
+	if IsProduction && !isGenesis {
 		latestTimestamp, err := dbo.SelectLatestTimestamp()
 		if err != nil {
 			sendFailure(c, "error determining latest timestamp")
@@ -106,6 +110,7 @@ func AddPost(c *gin.Context) {
 validation Input reaction should be of the format:
 {postId, descriptor, gravitasHash}  */
 func AddReaction(c *gin.Context) {
+	Rl.Take()
 	// Parsing request body
 	var reaction tp.Reaction
 	body, err := c.GetRawData()

@@ -42,6 +42,14 @@ func TimeSincePost(isDays bool, lastPostTime time.Time) int {
 	return int((curTime - prevTime) / HOURS_INT)
 }
 
+/* Validates length of post input fields */
+func ValidateInputLength(p tp.Post) bool {
+	if len(p.Title) > 40 || len(p.Author) > 10 || len(p.Contents) > 1500 {
+		return false
+	}
+	return true
+}
+
 /* Validates if the provided hash index has the authority to make a post at
 this time */
 func ValidateHashTiming(lastPostTime time.Time, hashIndex int) bool {

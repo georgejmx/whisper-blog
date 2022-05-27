@@ -7,11 +7,15 @@ import (
 	d "github.com/georgejmx/whisper-blog/controller"
 	tp "github.com/georgejmx/whisper-blog/types"
 	u "github.com/georgejmx/whisper-blog/utils"
+	"go.uber.org/ratelimit"
 
 	"github.com/gin-gonic/gin"
 )
 
-var dbo tp.ControllerTemplate
+var (
+	Rl  ratelimit.Limiter
+	dbo tp.ControllerTemplate
+)
 
 /* Establishes database connection and controller object, else panics */
 func SetupDatabase() {

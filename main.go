@@ -10,20 +10,23 @@ import (
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+	"go.uber.org/ratelimit"
 )
 
 /* Program entry point when used in production */
 func main() {
-	setup(true).Run("localhost:8000")
+	rl := ratelimit.New(150)
+	setup(true, rl).Run("localhost:8000")
 }
 
 /* Read production configuration and setup production server */
-func setup(isProduction bool) *gin.Engine {
+func setup(isProduction bool, rl ratelimit.Limiter) *gin.Engine {
 	// Setting config
 	config.SetupEnv(isProduction)
 
 	// Setting up database connection and routes
 	r.SetupDatabase()
+	r.Rl = rl
 	router := gin.Default()
 	router.GET("/data/chain", r.GetRawChain)
 	router.POST("/data/post", r.AddPost)

@@ -16,6 +16,7 @@ import (
 	x "github.com/georgejmx/whisper-blog/security"
 	tp "github.com/georgejmx/whisper-blog/types"
 	u "github.com/georgejmx/whisper-blog/utils"
+	"go.uber.org/ratelimit"
 )
 
 type PostResponse struct {
@@ -42,7 +43,9 @@ var (
 
 /* Integration tests entry point */
 func TestMain(m *testing.M) {
-	testServer = httptest.NewServer(setup(false))
+	r.IsProduction = false
+	rl := ratelimit.New(150)
+	testServer = httptest.NewServer(setup(false, rl))
 	code := m.Run()
 	teardownAll()
 	os.Exit(code)
