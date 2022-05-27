@@ -63,4 +63,7 @@ Also adjust the constants at the top of *client/src/main.js* to match the above
 values for `[YOUR IV]` and `[YOUR SPLICE INDEX]`
 
 - Run `go test ./...` to ensure your build is stable
-- Execute `go run main.go` to spin up the site
+- Execute `go build -o wb` to generate a binary
+- Put this binary wherever you like with a valid HTTPS key pair, next to a
+blank *data/* directory. **./wb** will spin the whole thing up with only
+sqlite needed
