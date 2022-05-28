@@ -24,7 +24,7 @@ var client embed.FS
 /* Program entry point when used in production */
 func main() {
 	rl := ratelimit.New(150)
-	setup(true, rl).RunTLS(":8000", "localhost.crt", "localhost.key")
+	setup(true, rl).RunTLS(":8000", "private.crt", "public.key")
 }
 
 /* Read configuration and setup production or test server */

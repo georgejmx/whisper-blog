@@ -1,5 +1,5 @@
-/* Usage: /node_modules/javascript-obfuscator/bin/javascript-obfuscator
-src/main.js --output public/main.js */
+/* Usage: node_modules/javascript-obfuscator/bin/javascript-obfuscator 
+    src/main.js --output public/main.js */
 const IV = 'snooping6is9bad0'
 const HASH_INDEX = 28
 
@@ -34,7 +34,7 @@ function addPost() {
         if (resp.marker === 1) {
             const newCode = unlockRawPasscode(resp.data, hash)
             responseBox.textContent =
-                `The new passcode is ${newCode}; ${resp.message}`
+                `${newCode} is the new passcode; ${resp.message}!`
 
             // Refreshing chain html
             imprintChain()
