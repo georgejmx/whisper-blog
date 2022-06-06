@@ -25,10 +25,14 @@ further reactions can be made by providing a passcode that was valid for
 the 3 previous posts. This means that attributed reactions, that carry
 more weight, can outvote any attempt to spam reactions.
 
+After 5 days of inactivity, the previous passcode can also make a new post. This
+ensures that the chain does not get stuck with one person. Then every 2 days,
+the next previous person can also make a post using their previous passcode.
+
 ## How to build and run
 
 - Will need sqlite3 and go1.18 installed
-- Clone the repo into your GOROOT, then add a config package with contents;
+- Clone the repo into your GOROOT, then modify your config package to look like;
 
 ```
 package config
@@ -60,10 +64,11 @@ func SetupEnv(isProduction bool) {
 ```
 
 Also adjust the constants at the top of *client/src/main.js* to match the above
-values for `[YOUR IV]` and `[YOUR SPLICE INDEX]`
+values for `[YOUR IV]` and `[YOUR SPLICE INDEX]`. This means rebuilding your
+obfuscated *client/public/main.js*
 
 - Run `go test ./...` to ensure your build is stable
 - Execute `go build -o wb` to generate a binary
 - Put this binary wherever you like with a valid HTTPS key pair, next to a
-blank *data/* directory. **./wb** will spin the whole thing up with only
-sqlite needed
+blank *data/* directory in which the database will be generated.
+**./wb** will spin the whole thing up with only sqlite needed
