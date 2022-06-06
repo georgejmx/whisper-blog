@@ -502,6 +502,8 @@ Ensure the default browser behavior of the `hidden` attribute.
   }
 }
 
+@import url('https://fonts.googleapis.com/css2?family=Montserrat&display=swap');
+
 .bg-yellow-300 {
   background-color: rgb(253 224 71 / var(--tw-bg-opacity));
 }
@@ -512,6 +514,18 @@ Ensure the default browser behavior of the `hidden` attribute.
 
 .bg-amber-600 {
   background-color: rgb(217 119 6 / var(--tw-bg-opacity));
+}
+
+.border-yellow-400 {
+  border-color: rgb(250 204 21 / var(--tw-bg-opacity));
+}
+
+.border-slate-500 {
+  border-color: rgb(100 116 139 / var(--tw-bg-opacity));
+}
+
+.border-amber-700 {
+  border-color: rgb(180 83 9 / var(--tw-bg-opacity));
 }
 
 .bg-slate-300 {
@@ -602,6 +616,10 @@ Ensure the default browser behavior of the `hidden` attribute.
   float: left;
 }
 
+.m-1 {
+  margin: 0.25rem;
+}
+
 .mx-12 {
   margin-left: 3rem;
   margin-right: 3rem;
@@ -690,8 +708,16 @@ Ensure the default browser behavior of the `hidden` attribute.
   display: table-row;
 }
 
+.grid {
+  display: grid;
+}
+
 .contents {
   display: contents;
+}
+
+.\!contents {
+  display: contents !important;
 }
 
 .hidden {
@@ -742,8 +768,24 @@ Ensure the default browser behavior of the `hidden` attribute.
   max-width: 65ch;
 }
 
+.max-w-lg {
+  max-width: 32rem;
+}
+
 .flex-initial {
   flex: 0 1 auto;
+}
+
+.flex-shrink {
+  flex-shrink: 1;
+}
+
+.flex-grow {
+  flex-grow: 1;
+}
+
+.border-collapse {
+  border-collapse: collapse;
 }
 
 .transform {
@@ -770,6 +812,10 @@ Ensure the default browser behavior of the `hidden` attribute.
 
 .flex-col {
   flex-direction: column;
+}
+
+.flex-wrap {
+  flex-wrap: wrap;
 }
 
 .content-center {
@@ -826,6 +872,10 @@ Ensure the default browser behavior of the `hidden` attribute.
   border-width: 1px;
 }
 
+.border-dotted {
+  border-style: dotted;
+}
+
 .border-double {
   border-style: double;
 }
@@ -833,11 +883,6 @@ Ensure the default browser behavior of the `hidden` attribute.
 .border-black {
   --tw-border-opacity: 1;
   border-color: rgb(0 0 0 / var(--tw-border-opacity));
-}
-
-.border-slate-600 {
-  --tw-border-opacity: 1;
-  border-color: rgb(71 85 105 / var(--tw-border-opacity));
 }
 
 .border-gray-300 {
@@ -975,8 +1020,20 @@ Ensure the default browser behavior of the `hidden` attribute.
   text-align: center;
 }
 
+.text-justify {
+  text-align: justify;
+}
+
 .align-top {
   vertical-align: top;
+}
+
+.font-montserrat {
+  font-family: Montserrat, sans-serif;
+}
+
+.font-serif {
+  font-family: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
 }
 
 .text-xl {
@@ -1015,10 +1072,6 @@ Ensure the default browser behavior of the `hidden` attribute.
 
 .font-semibold {
   font-weight: 600;
-}
-
-.font-medium {
-  font-weight: 500;
 }
 
 .font-normal {
@@ -1111,12 +1164,21 @@ Ensure the default browser behavior of the `hidden` attribute.
   box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
 }
 
+.outline {
+  outline-style: solid;
+}
+
 .outline-1 {
   outline-width: 1px;
 }
 
 .outline-slate-900 {
   outline-color: #0f172a;
+}
+
+.blur {
+  --tw-blur: blur(8px);
+  filter: var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow);
 }
 
 .grayscale {

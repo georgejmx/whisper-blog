@@ -125,24 +125,29 @@ func AwardDescriptors(reactions []tp.Reaction) []tp.Reaction {
 
 	// Colouring first reaction
 	if len(reactions) > 0 {
-		reactions[0].Colour = "bg-yellow-300"
+		reactions[0].Colour = "yellow-300"
+		reactions[0].ColourDark = "yellow-400"
 	}
 
 	// Colouring second reaction
 	if len(reactions) > 1 {
 		if reactions[1].Gravitas < reactions[0].Gravitas {
-			reactions[1].Colour = "bg-slate-400"
+			reactions[1].Colour = "slate-400"
+			reactions[1].ColourDark = "slate-500"
 		} else {
 			reactions[1].Colour = reactions[0].Colour
+			reactions[1].ColourDark = reactions[0].ColourDark
 		}
 	}
 
 	// Colouring third reaction
 	if len(reactions) > 2 {
 		if reactions[2].Gravitas < reactions[1].Gravitas {
-			reactions[2].Colour = "bg-amber-600"
+			reactions[2].Colour = "amber-600"
+			reactions[2].ColourDark = "amber-700"
 		} else {
 			reactions[2].Colour = reactions[1].Colour
+			reactions[2].ColourDark = reactions[1].ColourDark
 		}
 	}
 

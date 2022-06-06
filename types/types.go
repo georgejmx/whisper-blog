@@ -45,6 +45,7 @@ type Reaction struct {
 	Gravitas     int    `json:"gravitas"`
 	GravitasHash string `json:"hash,omitempty"`
 	Colour       string
+	ColourDark   string
 }
 
 // A template for an object that performs database interactions

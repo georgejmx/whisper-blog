@@ -1,18 +1,18 @@
 {{range .HtmlPosts}}
 <div class="max-w-md rounded overflow-hidden shadow-lg {{.Colour}}">
     <div class="px-6 py-4">
-        <div class="font-bold text-xl mb-2">{{.Title}}</div>
-        <p class="text-gray-700 text-base">{{.Contents}}</p>
-        <p class="text-black font-bold"><u>{{.Author}}</u> on {{.Timestring}}</p>
+        <div class="font-bold text-xl mb-2 font-montserrat">{{.Title}}</div>
+        <p class="text-gray-700 text-base font-montserrat">{{.Contents}}</p>
+        <p class="text-black font-bold font-montserrat"><u>{{.Author}}</u> on {{.Timestring}}</p>
     </div>
     <div class="px-6 pb-1">
         <button class="inline-block bg-pink-200 hover:bg-pink-500 rounded-full p-2 mr-2 mb-2
-            shadow-lg outline-1 outline-slate-900 h-10 border-double border-2 border-black"
+            shadow-lg outline-1 outline-slate-900 h-10 border-2 border-black"
             onclick="reactModalHandler({{.Id}})">
             <img src="./assets/vote.png" class="w-6"/></button>
         {{range .Reactions}}
-        <span class="inline-block {{.Colour}} rounded-full p-1 text-sm font-semibold
-        text-gray-700 ml-6 mr-2 h-8 border-2 border-slate-600">{{.Descriptor}}</span>
+        <span class="inline-block bg-{{.Colour}} rounded-full p-1 text-sm font-semibold font-serif
+        text-gray-700 ml-6 mr-2 h-8 border-dotted border-2 border-{{.ColourDark}}">{{.Descriptor}}</span>
         {{end}}
     </div>
 </div>

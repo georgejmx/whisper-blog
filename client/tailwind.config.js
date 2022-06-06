@@ -1,7 +1,11 @@
 module.exports = {
-  content: ["./**/*.{html,js}", "../templates/*.gohtml"],
+  content: ["./**/*.{html,js}", "../routes/templates/*.gohtml"],
   theme: {
-    extend: {},
+    extend: {
+      fontFamily: {
+        'montserrat': ['Montserrat', 'sans-serif']
+      }
+    },
   },
   plugins: [],
 }

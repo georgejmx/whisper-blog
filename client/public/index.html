@@ -13,21 +13,21 @@
 	<body class="bg-slate-900">
 		<!-- HOME -->
 		<div class="text-center pt-5">
-			<h1 class="text-3xl font-bold underline text-white">WhisperBlog</h1>
+			<h1 class="text-3xl font-bold text-white font-montserrat">WhisperBlog</h1>
 			<div class="mx-12 my-4 flex flex-row justify-center">
-				<div class="flex flex-col">
-					<p class="text-slate-300 text-md flex-initial my-5">Trace the digital Whispers
+				<div class="flex flex-col max-w-lg">
+					<p class="text-slate-300 text-md flex-initial my-5 font-serif">Trace the digital Whispers
 						to see what your friends are talking about. Receiving the chain passcode
 						brings great responsibility; stamp your mark on the chain and guard it
 						against malicious actors!</p>
 					<div>
-						<button onclick="addModalHandler(true)" class="inline-block px-6 py-2.5
-							bg-pink-500 font-medium text-xs leading-tight rounded shadow-md
+						<button onclick="addModalHandler(true)" class="inline-block px-6 py-2.5 font-montserrat
+							bg-pink-500 text-xs leading-tight rounded shadow-md font-bold
 							hover:bg-pink-700 hover:shadow-lg focus:bg-pink-600 focus:shadow-lg 
 							focus:outline-none focus:ring-0 active:bg-pink-700 active:shadow-lg transition
 							duration-150 ease-in-out" type="button" id="add-modal-tr">Add Post</button>
 						<button onclick="helpModalHandler(true)" class="inline-block px-6 py-2.5 ml-4
-							bg-gray-400 font-medium text-xs leading-tight rounded shadow-md
+							bg-gray-400 font-bold text-xs leading-tight rounded shadow-md font-montserrat
 							hover:bg-gray-500 hover:shadow-lg active:bg-grey-700 active:shadow-lg 
 							transition duration-150 ease-in-out" type="button" id="help-modal-tr">
 							Help</button>
@@ -47,40 +47,40 @@
 				<div class="inline-block max-w-prose overflow-hidden text-left transition-all
 					transform bg-white rounded-lg 2xl:max-w-2xl xl:w-3/5">
 					<div class="relative py-3 md:px-10 rounded">
-						<h1 class="text-slate-900 font-xl font-bold mb-1 
+						<h1 class="text-slate-900 font-xl font-bold mb-1 font-montserrat
 							underline-offset-1">Add Post</h1>
 						<br>
 	
-						<label for="post-title" class="text-slate-900 text-sm
+						<label for="post-title" class="text-slate-900 text-sm font-montserrat
 							leading-tight pt-2 tracking-normal">Title</label>
 						<input id="post-title" class="mt-1 text-slate-900 focus:outline-none
 							focus:border focus:border-slate-700 font-normal w-full h-10 flex
-							items-center pl-2 text-sm border-gray-300 rounded border"
+							items-center pl-2 text-sm border-gray-300 rounded border font-montserrat"
 							placeholder="untitled" maxlength="40"
 							onkeyup="updateCharsLeft('post-title')"/>
-						<p class="text-xs mb-3 italic" id="post-title-count">40 characters left</p>
+						<p class="text-xs mb-3 italic font-montserrat" id="post-title-count">40 characters left</p>
 	
 						<label for="post-contents" class="text-slate-900 text-sm leading-tight
-							pt-3 tracking-normal">Contents</label>
+							pt-3 tracking-normal font-montserrat">Contents</label>
 						<textarea id="post-contents" rows="75" cols="20" class="text-slate-900
-							focus:outline-none focus:border mt-1 focus:border-slate-700
+							focus:outline-none focus:border mt-1 focus:border-slate-700 font-montserrat
 							font-normal w-full h-10 flex items-center text-sm pl-2border-gray-300
 							rounded border" style="min-height: 120px" maxlength="1500"
 							placeholder="susurro ad amicos.."
 							onkeyup="updateCharsLeft('post-contents')"></textarea>
-						<p class="text-xs mb-3 italic" id="post-contents-count">
+						<p class="text-xs mb-3 italic font-montserrat" id="post-contents-count">
 							1500 characters left</p>
 
 						<label for="post-author" class="text-slate-900 text-sm leading-tight pt-3
-							tracking-normal">Author</label>
+							tracking-normal font-montserrat">Author</label>
 						<input id="post-author" class="mt-2 text-slate-900 focus:outline-none
 							focus:border focus:border-slate-700 font-normal w-full h-10 flex
-							items-center pl-2 text-sm border-gray-300 rounded border" 
+							items-center pl-2 text-sm border-gray-300 rounded border font-montserrat" 
 							placeholder="unnamed" maxlength="10"
 							onkeyup="updateCharsLeft('post-author')"/>
-						<p class="text-xs mb-3 italic" id="post-author-count">10 characters left</p>
+						<p class="text-xs mb-3 italic font-montserrat" id="post-author-count">10 characters left</p>
 
-						<p class="text-slate-900 text-sm mb-3 leading-tight pt-3 tracking-normal">
+						<p class="text-slate-900 text-sm mb-3 leading-tight pt-3 font-montserrat tracking-normal">
 							Tag</p>
 						<div class="flex">
 							<div class="form-check form-check-inline">
@@ -123,22 +123,22 @@
 						</div>
 
 						<label for="post-passcode" class="text-slate-900 text-sm leading-tight
-							pt-3 tracking-normal">Passcode</label>
-						<input id="post-passcode" class="mb-3 mt-2 text-slate-900
+							pt-3 tracking-normal font-montserrat">Passcode</label>
+						<input id="post-passcode" class="mb-3 mt-2 text-slate-900 font-montserrat
 							focus:outline-none focus:border focus:border-slate-700 font-normal
 							w-full h-10 flex items-center pl-2 text-sm border-gray-300
 							rounded border" placeholder="unknown" />
 	
 						<p class="text-slate-900 text-sm leading-tight pt-3 tracking-normal
-							font-bold" id="post-response"></p>
+							font-bold font-montserrat" id="post-response"></p>
 
 						<div class="flex items-center justify-evenly w-full p-2">
 							<button class="focus:outline-none focus:ring-2 focus:ring-offset-2
 								bg-pink-500 focus:ring-slate-700 transition duration-150
-								ease-in-out hover:bg-pink-600 rounded px-8 py-2 text-sm
+								ease-in-out hover:bg-pink-600 rounded px-8 py-2 text-sm font-montserrat
 								text-slate-900" onclick="addPost()">Express yourself</button>
 							<button class="focus:outline-none focus:ring-2 focus:ring-offset-2 pl-4
-								focus:ring-gray-400 ml-3 transition duration-150
+								focus:ring-gray-400 ml-3 transition duration-150 font-montserrat
 								ease-in-out hover:border-gray-400 hover:bg-black border
 								rounded px-8 py-2 text-sm bg-slate-900 text-white"
 								onclick="addModalHandler(false)">Go back</button>
@@ -156,38 +156,38 @@
 				<div class="inline-block max-w-prose overflow-hidden text-left transition-all
 					transform bg-white rounded-lg 2xl:max-w-2xl xl:w-3/5">
 					<div class="relative py-3 md:px-10 rounded">
-						<h1 class="text-slate-900 font-xl font-bold mb-1 
+						<h1 class="text-slate-900 font-xl font-bold mb-1 font-montserrat
 							underline-offset-1">Add Reaction</h1>
 						<br>
 
-						<p class="text-sm">Click an adjective to react to the selected post, provide
+						<p class="text-sm font-montserrat">Click an adjective to react to the selected post, provide
 							a recent passcode if you can..</p>
 
-						<p class="text-slate-900 text-sm mb-2 leading-tight pt-3 tracking-normal">
+						<p class="text-slate-900 text-sm mb-2 leading-tight pt-3 tracking-normal font-montserrat">
 							Descriptors</p>
 						<div class="pb-5" id="react-deck">
 							<!-- Server generated buttons -->
 						</div>
 
 						<label for="react-passcode" class="text-slate-900 text-sm leading-tight
-							pt-3 tracking-normal">Passcode</label>
+							pt-3 tracking-normal font-montserrat">Passcode</label>
 						<input id="react-passcode" class="mb-3 mt-2 text-slate-900
 							focus:outline-none focus:border focus:border-slate-700 font-normal
-							w-full h-10 flex items-center pl-2 text-sm border-gray-300
+							w-full h-10 flex items-center pl-2 text-sm border-gray-300 font-montserrat
 							rounded border" placeholder="optional" />
 	
 						<p class="text-slate-900 text-sm leading-tight pt-3 tracking-normal
-							font-bold" id="react-response"></p>
+							font-bold font-montserrat" id="react-response"></p>
 
 						<div class="flex items-center justify-evenly w-full p-2">
 							<button class="focus:outline-none focus:ring-2 focus:ring-offset-2
 								bg-pink-500 focus:ring-slate-700 transition duration-150
-								ease-in-out hover:bg-pink-600 rounded px-8 py-2 text-sm
+								ease-in-out hover:bg-pink-600 rounded px-8 py-2 text-sm font-montserrat
 								text-slate-900" onclick="addReaction()">Vote</button>
 							<button class="focus:outline-none focus:ring-2 focus:ring-offset-2 pl-4
 								focus:ring-gray-400 ml-3 transition duration-150 text-white
 								ease-in-out hover:border-gray-400 hover:bg-black border
-								rounded px-8 py-2 text-sm bg-slate-900"
+								rounded px-8 py-2 text-sm bg-slate-900 font-montserrat"
 								onclick="reactModalHandler(false)">Go back</button>
 						</div>
 					</div>
@@ -203,18 +203,18 @@
 				<div class="inline-block max-w-prose overflow-hidden text-left transition-all
 					transform bg-white rounded-lg 2xl:max-w-2xl xl:w-3/5">
 					<div class="relative py-3 md:px-10 rounded">
-						<h1 class="text-slate-900 font-xl font-bold mb-1 
+						<h1 class="text-slate-900 font-xl font-bold mb-1 font-montserrat
 							underline-offset-1">Help Page</h1>
 						<br>
 
-						<p class="text-sm"><i>WhisperBlog</i> is a basic social media site that
+						<p class="text-sm font-montserrat"><i>WhisperBlog</i> is a basic social media site that
 							works entirely sequentially, where making a new post can only happen
 							with the passcode. The initial post, from <strong>Add Post</strong> is
 							made with creation of the chain. 
 							From this point, making a post randomly generates the new passcode. This
 							can then be given to someone new, who then creates the next post.</p>
 
-						<p class="text-sm pt-4">This was designed to be a digital chinese whispers,
+						<p class="text-sm pt-4 font-montserrat">This was designed to be a digital chinese whispers,
 							posts then circulate in turn around a small
 							social group. The chain could also move around society if the passcode
 							is given to a more broad range of people. Uniquely, <i>WhisperBlog</i>
@@ -222,7 +222,7 @@
 							facilitates a chain of trust between posters unlike anonymous social
 							media platforms.</p>
 
-						<p class="text-sm pt-4">Clicking <strong>Vote</strong> on each post allows
+						<p class="text-sm pt-4 font-montserrat">Clicking <strong>Vote</strong> on each post allows
 							reacting to this post, where possible reactions are random English
 							adjectives. There is room for 6 anonymous reactions, where
 							further reactions can be made by providing a passcode that was valid for
@@ -232,7 +232,7 @@
 						<button class="focus:outline-none focus:ring-2 focus:ring-offset-2 pl-4
 							focus:ring-gray-400 ml-3 transition duration-150 text-white
 							ease-in-out hover:border-gray-400 hover:bg-black border
-							rounded px-8 py-2 text-sm bg-slate-900 mt-6"
+							rounded px-8 py-2 text-sm bg-slate-900 mt-6 font-montserrat"
 							onclick="helpModalHandler(false)">Go back</button>
 					</div>
 				</div>

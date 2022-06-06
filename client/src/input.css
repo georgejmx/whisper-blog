@@ -1,6 +1,7 @@
 /* Usage: npx tailwindcss -i .src/input.css -o ./public/tw.css --watch */
 @tailwind base;
 @tailwind components;
+@import url('https://fonts.googleapis.com/css2?family=Montserrat&display=swap');
 
 .bg-yellow-300 {
     background-color: rgb(253 224 71 / var(--tw-bg-opacity));
@@ -12,6 +13,18 @@
 
 .bg-amber-600 {
     background-color: rgb(217 119 6 / var(--tw-bg-opacity));
+}
+
+.border-yellow-400 {
+    border-color: rgb(250 204 21 / var(--tw-bg-opacity));
+}
+
+.border-slate-500 {
+    border-color: rgb(100 116 139 / var(--tw-bg-opacity));
+}
+
+.border-amber-700 {
+    border-color: rgb(180 83 9 / var(--tw-bg-opacity));
 }
 
 .bg-slate-300 {
