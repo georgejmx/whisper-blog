@@ -24,7 +24,7 @@ var client embed.FS
 /* Program entry point when used in production */
 func main() {
 	rl := ratelimit.New(150)
-	setup(true, rl).Run(":80")
+	setup(true, rl).Run(":8007")
 }
 
 /* Read configuration and setup production or test server */
@@ -47,13 +47,9 @@ func setup(isProduction bool, rl ratelimit.Limiter) *gin.Engine {
 
 	// Serving client at root directory
 	stripped, err := fs.Sub(client, "client/public")
-	if err != nil {
-		panic("error when bundling client files")
-	}
+	if err != nil { panic("error when bundling client files") }
 	router.StaticFS("/w", http.FS(stripped))
-	router.GET("/", func(c *gin.Context) {
-		c.Redirect(301, "/w")
-	})
+	router.GET("/", func(c *gin.Context) { c.Redirect(301, "/w") })
 
 	return router
 }

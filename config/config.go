@@ -12,7 +12,7 @@ var (
 tests than in production */
 func SetupEnv(isProduction bool) {
 	if isProduction {
-		DB_FILEPATH = "./data/blog_trial.db"
+		DB_FILEPATH = "./data/blog.db"
 		AES_IV = "snooping6is9bad0"
 		AES_SPLICE_INDEX = "28"
 	} else {

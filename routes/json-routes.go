@@ -12,7 +12,8 @@ import (
 
 const MAX_ANON_REACTIONS int = 6
 
-var IsProduction = true
+// Whether to mandate a 2 hour delay between posts or not
+var IsTimeGuarded = false
 
 /* Gets the chain stored in backend as JSON. This inlcudes all posts and the
 top 3 reactions for each post */
@@ -54,7 +55,7 @@ func AddPost(c *gin.Context) {
 	}
 
 	// Need to perform time validation if not genesis post
-	if IsProduction && !isGenesis {
+	if IsTimeGuarded && !isGenesis {
 		latestTimestamp, err := dbo.SelectLatestTimestamp()
 		if err != nil {
 			sendFailure(c, "error determining latest timestamp")

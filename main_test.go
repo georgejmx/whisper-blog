@@ -43,7 +43,7 @@ var (
 
 /* Integration tests entry point */
 func TestMain(m *testing.M) {
-	r.IsProduction = false
+	r.IsTimeGuarded = false
 	rl := ratelimit.New(150)
 	testServer = httptest.NewServer(setup(false, rl))
 	code := m.Run()
