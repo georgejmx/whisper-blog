@@ -35,7 +35,7 @@ the next previous person can also make a post using their previous passcode.
 
 Note that this will be insecure as the encryption key is in the public image
 
-`docker run -p 8000:8007 georgejmx/whisper-blog:0.2`
+`docker run -p 8000:8007 georgejmx/whisper-blog:latest`
 
 ### Manual build and run
 
@@ -72,7 +72,7 @@ func SetupEnv(isProduction bool) {
 
 Also adjust the constants at the top of _client/src/main.js_ to match the above
 values for `[YOUR IV]` and `[YOUR SPLICE INDEX]`. This means rebuilding your
-obfuscated _client/public/main.js_ using `cd client && npm run build`. Now time
+obfuscated _client/public/main.js_ using `cd client && npm run bundle`. Now time
 to build
 
 #### Using docker
