@@ -1,66 +1,65 @@
-/* Usage: npx tailwindcss -i .src/input.css -o ./public/tw.css --watch */
 @tailwind base;
 @tailwind components;
-@import url('https://fonts.googleapis.com/css2?family=Montserrat&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Montserrat&display=swap");
 
 .bg-yellow-300 {
-    background-color: rgb(253 224 71 / var(--tw-bg-opacity));
+  background-color: rgb(253 224 71 / var(--tw-bg-opacity));
 }
 
 .bg-slate-400 {
-    background-color: rgb(148 163 184 / var(--tw-bg-opacity));
+  background-color: rgb(148 163 184 / var(--tw-bg-opacity));
 }
 
 .bg-amber-600 {
-    background-color: rgb(217 119 6 / var(--tw-bg-opacity));
+  background-color: rgb(217 119 6 / var(--tw-bg-opacity));
 }
 
 .border-yellow-400 {
-    border-color: rgb(250 204 21 / var(--tw-bg-opacity));
+  border-color: rgb(250 204 21 / var(--tw-bg-opacity));
 }
 
 .border-slate-500 {
-    border-color: rgb(100 116 139 / var(--tw-bg-opacity));
+  border-color: rgb(100 116 139 / var(--tw-bg-opacity));
 }
 
 .border-amber-700 {
-    border-color: rgb(180 83 9 / var(--tw-bg-opacity));
+  border-color: rgb(180 83 9 / var(--tw-bg-opacity));
 }
 
 .bg-slate-300 {
-    background-color: rgb(203 213 225 / var(--tw-bg-opacity));
+  background-color: rgb(203 213 225 / var(--tw-bg-opacity));
 }
 
 .bg-orange-300 {
-    background-color: rgb(253 186 116 / var(--tw-bg-opacity));
+  background-color: rgb(253 186 116 / var(--tw-bg-opacity));
 }
 
 .bg-indigo-300 {
-    background-color: rgb(165 180 252 / var(--tw-bg-opacity));
+  background-color: rgb(165 180 252 / var(--tw-bg-opacity));
 }
 
 .bg-pink-300 {
-    background-color: rgb(249 168 212 / var(--tw-bg-opacity));
+  background-color: rgb(249 168 212 / var(--tw-bg-opacity));
 }
 
 .bg-cyan-200 {
-    background-color: rgb(165 243 252 / var(--tw-bg-opacity));
+  background-color: rgb(165 243 252 / var(--tw-bg-opacity));
 }
 
 .bg-lime-200 {
-    background-color: rgb(217 249 157 / var(--tw-bg-opacity));
+  background-color: rgb(217 249 157 / var(--tw-bg-opacity));
 }
 
 .bg-orange-100 {
-    background-color: rgb(255 237 213 / var(--tw-bg-opacity));
+  background-color: rgb(255 237 213 / var(--tw-bg-opacity));
 }
 
 .bg-purple-300 {
-    background-color: rgb(216 180 254 / var(--tw-bg-opacity));
+  background-color: rgb(216 180 254 / var(--tw-bg-opacity));
 }
 
 .text-red-400 {
-    color: rgb(248 113 113 / var(--tw-text-opacity));
+  color: rgb(248 113 113 / var(--tw-text-opacity));
 }
 
 @tailwind utilities;

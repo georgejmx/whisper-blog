@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"log"
 	"net/http"
 	"net/http/httptest"
@@ -87,7 +87,7 @@ func TestAddPostSuccess(t *testing.T) {
 		}
 
 		// Checking for a valid response
-		respData, _ := ioutil.ReadAll(resp.Body)
+		respData, _ := io.ReadAll(resp.Body)
 		json.Unmarshal(respData, &respJson)
 		if respJson.Marker != 1 || len(respJson.Data) != 32 {
 			t.Logf("did not get expected response from %dth post", i)
@@ -129,7 +129,7 @@ func TestAddPostFailure(t *testing.T) {
 		}
 
 		// Checking for invalid response
-		respData, _ := ioutil.ReadAll(resp.Body)
+		respData, _ := io.ReadAll(resp.Body)
 		json.Unmarshal(respData, &respJson)
 		if respJson.Marker != 0 {
 			t.Logf("did not get expected response from %dth invalid post", i)
@@ -152,7 +152,7 @@ func TestAddPostFailure(t *testing.T) {
 		}
 
 		// Checking for invalid response
-		respData, _ := ioutil.ReadAll(resp.Body)
+		respData, _ := io.ReadAll(resp.Body)
 		json.Unmarshal(respData, &respJson)
 		if respJson.Marker != 0 {
 			t.Logf("did not get expected response from %dth invalid post", i+3)
@@ -176,7 +176,7 @@ func TestAddAnonReaction(t *testing.T) {
 	if err != nil {
 		t.Fatal("unable to get chain")
 	}
-	respData, _ := ioutil.ReadAll(resp.Body)
+	respData, _ := io.ReadAll(resp.Body)
 	json.Unmarshal(respData, &chainResp)
 	if chainResp.Marker != 1 || chainResp.DaysSince != 0 {
 		t.Fatal("unable to get correct chain format from database")
@@ -216,7 +216,7 @@ func TestAddSignedReaction(t *testing.T) {
 	if err != nil {
 		t.Fatal("unable to get chain")
 	}
-	respData, _ := ioutil.ReadAll(resp.Body)
+	respData, _ := io.ReadAll(resp.Body)
 	json.Unmarshal(respData, &chainResp)
 	if chainResp.Marker != 1 || chainResp.DaysSince != 0 {
 		t.Fatal("unable to get correct chain format from database")
@@ -260,7 +260,7 @@ func addReaction(
 	}
 
 	// Parse response into type, checking we got success
-	respData, err := ioutil.ReadAll(resp.Body)
+	respData, err := io.ReadAll(resp.Body)
 	err2 := json.Unmarshal(respData, &respJson)
 	if err != nil || err2 != nil {
 		t.Fatal("unable to parse response json into correct type")
@@ -299,7 +299,7 @@ func addGenesisPost(t *testing.T) {
 	}
 
 	// Parse response into type, checking we got a success response
-	respData, err := ioutil.ReadAll(resp.Body)
+	respData, err := io.ReadAll(resp.Body)
 	err2 := json.Unmarshal(respData, &respJson)
 	if err != nil || err2 != nil {
 		t.Fatal("unable to parse response json into correct type")
