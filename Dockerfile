@@ -9,7 +9,7 @@ RUN npm install
 RUN npm run lint
 RUN npm run bundle
 
-FROM golang:1.18-alpine AS server-builder
+FROM golang:1.20-alpine AS server-builder
 RUN apk add build-base
 
 WORKDIR /app
